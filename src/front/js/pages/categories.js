@@ -17,7 +17,7 @@ export const Category = () => {
         });
         if (response.ok) {
             setNewCategoryName('');
-            actions.fetchCategories();
+            // actions.fetchCategories();
         } else {
             console.error('Failed to create category:', response.status);
         }
