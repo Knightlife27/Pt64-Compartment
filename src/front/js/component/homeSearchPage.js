@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import MapComponent from "./homeMap";
 import HomeSearch from "./homeSearch";
 import ApartmentList from "./apartmentList";
+import { Container, Row, Col } from 'react-bootstrap'
 
 export const HomeSearchPage = () => {
   const [mapData, setMapData] = useState([]);
@@ -41,6 +42,14 @@ export const HomeSearchPage = () => {
     setSearchResults(null);
   };
 
+  const groupApartments = (apartments) => {
+    const grouped = [];
+    for (let i = 0; i < apartments.length; i += 2) {
+      grouped.push(apartments.slice(i, i + 2));
+    }
+    return grouped;
+  };
+
   return (
     <div className="search-page">
       <div className="map-column">
@@ -51,6 +60,7 @@ export const HomeSearchPage = () => {
           </div>
         </div>
       </div>
+      
       <div className="search-column">
         <div className="search-input">
           <HomeSearch 
@@ -66,7 +76,17 @@ export const HomeSearchPage = () => {
             <>
               <h2>Search Results</h2>
               {searchResults.apartments && searchResults.apartments.length > 0 ? (
-                <ApartmentList apartments={searchResults.apartments} />
+                <Container fluid>
+                  {groupApartments(searchResults.apartments).map((pair, index) => (
+                    <Row key={index} className="apartment-row mb-4">
+                      {pair.map((apartment, apartmentIndex) => (
+                        <Col key={apartment.id} xs={12} md={6}>
+                          <ApartmentList apartments={[apartment]} />
+                        </Col>
+                      ))}
+                    </Row>
+                  ))}
+                </Container>
               ) : (
                 <p>No apartments found. Try adjusting your search criteria.</p>
               )}
