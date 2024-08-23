@@ -8,7 +8,7 @@ export const LoggedInNavbar = ({ onLogout }) => {
         <Link to="/" className="navbar-brand-link">
           <img 
             src="/homeai.jpg"
-            alt="Compartments.com" 
+            alt="NestifyAI" 
             className="navbar-brand-image" 
           />
         </Link>

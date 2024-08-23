@@ -8,7 +8,7 @@ export const NonLoggedInNavbar = () => {
         <Link to="/" className="navbar-brand-link">
           <img 
             src="/homeai.jpg"
-            alt="Compartments.com" 
+            alt="Nestify.ai" 
             className="navbar-brand-image" 
           />
         </Link>

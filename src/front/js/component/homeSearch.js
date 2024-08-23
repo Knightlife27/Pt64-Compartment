@@ -137,7 +137,7 @@ function HomeSearch({ onSearchResults }) {
 
   return (
     <div>
-      <h2>Home Search</h2>
+      <h2>Tell Us What You're Looking For...</h2>
       <form onSubmit={handleSubmit}>
         <div className="ai-input-container mb-3">
           <input
@@ -145,7 +145,7 @@ function HomeSearch({ onSearchResults }) {
             className="ai-input"
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
-            placeholder="Describe your preferences (e.g., I want an apartment in San Diego)"
+            placeholder="Bedrooms, Baths, Square Footage, Price?"
             required
             disabled={loading}
           />
