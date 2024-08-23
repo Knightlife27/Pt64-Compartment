@@ -25,7 +25,7 @@
   flex-direction: column;
   padding: 20px;
   align-items: center;
-}
+} 
 
 .map-component {
   width: 100%;
@@ -103,10 +103,65 @@
   width: 100%;
 }
 
+.apartment-row > .col-md-6 {
+  width: 50%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+
+
+
+.apartment-row {
+  display: flex;
+  flex-wrap: wrap;
+ 
+}
+
+
+
+.apartment-row > .col-md-6 {
+  display: flex;
+  margin-bottom: 20px; /* Add space between rows */
+  
+}
+
+.apartment-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.house-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Adjust the house image to take remaining space */
+
+
+.house-image img {
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+
+
+
+
+.apartment-row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
 .apartment-list {
   flex: 1;
   max-width: calc(50% - 10px);
   display: flex;
+  width: 50%;
   flex-direction: column;
   align-items: center;
   gap: 24px;
@@ -136,7 +191,11 @@
   overflow: hidden;
   background: white;
   border: none;
+  flex-grow: 1;
+  min-height: 200px;
 }
+
+
 
 .house-image::before,
 .house-image::after,
