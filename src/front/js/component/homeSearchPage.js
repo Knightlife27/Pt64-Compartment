@@ -171,11 +171,11 @@ export const HomeSearchPage = () => {
 
   const groupApartments = (apartments) => {
     const grouped = [];
-    for (let i = 0; i < apartments.length; i += 2) {
-      grouped.push(apartments.slice(i, i + 2));
+    for (let i = 0; i < apartments.length; i += 3) {
+      grouped.push(apartments.slice(i, i + 3));
     }
     return grouped;
-  };
+  }
 
   const handleMarkerClick = (index) => {
     setSelectedApartmentIndex(index);
@@ -225,9 +225,9 @@ export const HomeSearchPage = () => {
                   {groupApartments(searchResults.apartments).map((pair, rowIndex) => (
                     <Row key={rowIndex} className="apartment-row mb-4">
                       {pair.map((apartment, colIndex) => {
-                        const index = rowIndex * 2 + colIndex;
+                        const index = rowIndex * 3 + colIndex;
                         return (
-                          <Col key={apartment.id} xs={12} md={6}>
+                          <Col key={apartment.id} xs={12} md={4}>
                             <div 
                               ref={el => apartmentRefs.current[index] = el}
                               className={`apartment-wrapper ${selectedApartmentIndex === index ? 'highlighted' : ''}`}
