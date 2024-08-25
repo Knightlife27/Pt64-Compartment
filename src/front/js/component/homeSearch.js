@@ -135,34 +135,33 @@ function HomeSearch({ onSearchResults }) {
     return Object.keys(preferences).length > 0 ? preferences : null;
   };
 
-  return (
-    <div>
-      <h2>Tell Us What You're Looking For...</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="ai-input-container mb-3">
-          <input
-            type="text"
-            className="ai-input"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-            placeholder="Bedrooms, Baths, Square Footage, Price?"
-            required
-            disabled={loading}
-          />
-        </div>
-        <div className="d-grid">
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Searching...' : 'Search Homes'}
-          </button>
-        </div>
-      </form>
-      {error && (
-        <div className="alert alert-danger mt-3" role="alert">
-          {error}
-        </div>
-      )}
-    </div>
-  );
+
+return (
+  <div className="home-search">
+    <h2 className="search-title">Find Your Dream Home</h2>
+    <form onSubmit={handleSubmit} className="search-form">
+      <div className="search-input-container">
+        <input
+          type="text"
+          className="search-input"
+          value={userPrompt}
+          onChange={(e) => setUserPrompt(e.target.value)}
+          placeholder="Describe your ideal home (e.g., 3 bedrooms, 2 baths, under $300,000 in Miami)"
+          required
+          disabled={loading}
+        />
+      </div>
+      <button type="submit" className="search-button" disabled={loading}>
+        {loading ? 'Searching...' : 'Search Homes'}
+      </button>
+    </form>
+    {error && (
+      <div className="error-message" role="alert">
+        {error}
+      </div>
+    )}
+  </div>
+);
 }
 
 export default HomeSearch;
