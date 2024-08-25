@@ -120,13 +120,16 @@ def get_apartments():
 
 
 def parse_square_footage(preferences):
-    location = preferences.get('location', '').lower()
-    sqft_match = re.search(r'(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)', location)
+    square_footage = preferences.get('square_footage', '').lower()
+    if not square_footage:
+        return None, None
+    
+    sqft_match = re.search(r'(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)', square_footage)
     if sqft_match:
         sqft = int(sqft_match.group(1))
-        if 'more than' in location or 'greater than' in location or 'over' in location:
+        if 'more than' in square_footage or 'greater than' in square_footage or 'over' in square_footage:
             return sqft, 'more'
-        elif 'less than' in location or 'under' in location:
+        elif 'less than' in square_footage or 'under' in square_footage:
             return sqft, 'less'
         else:
             return sqft, 'exact'
@@ -183,7 +186,7 @@ def analyze_apartments():
         # Fetch apartment data
         base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
         
-        location = user_preferences.get("location", "San Francisco, CA").split(" with ")[0].strip()
+        location = user_preferences.get("location", "San Francisco, CA")
         sort = user_preferences.get("sort", "Newest")
         min_price = user_preferences.get("min_price")
         max_price = user_preferences.get("max_price")
@@ -192,6 +195,7 @@ def analyze_apartments():
         
         # Parse square footage input
         sqft_value, sqft_comparison = parse_square_footage(user_preferences)
+        print(f"Parsed square footage: {sqft_value} {sqft_comparison}")
         
         # Construct URL with parameters
         url = f"{base_url}?location={location}&sort={sort}"
@@ -199,10 +203,13 @@ def analyze_apartments():
             url += f'&price_min={min_price}'
         if max_price:
             url += f'&price_max={max_price}'
-        if sqft_value and sqft_comparison == 'more':
-            url += f'&sqft_min={sqft_value}'
-        elif sqft_value and sqft_comparison == 'less':
-            url += f'&sqft_max={sqft_value}'
+        if sqft_value:
+            if sqft_comparison == 'more':
+                url += f'&sqft_min={sqft_value}'
+            elif sqft_comparison == 'less':
+                url += f'&sqft_max={sqft_value}'
+            else:
+                url += f'&sqft_min={sqft_value}&sqft_max={sqft_value}'
         if bedrooms:
             url += f'&beds_min={bedrooms}&beds_max={bedrooms}'
         if bathrooms:
@@ -247,6 +254,9 @@ def analyze_apartments():
             (not bathrooms or (prop['bathrooms'] is not None and prop['bathrooms'] == float(bathrooms)))
         )]
         print(f"Filtered {len(filtered_data)} properties matching user preferences")
+        print(f"Square footage filter: {sqft_value} {sqft_comparison}")
+        for prop in filtered_data:
+            print(f"Property living area: {prop['living_area']}")
 
         if not filtered_data:
             print("No properties found after filtering")
@@ -365,6 +375,15 @@ def generate_city_list():
         ]
     )
     return jsonify(result = json.loads(completion.choices[0].message.content))
+
+
+
+
+
+
+
+
+
 
 
 
