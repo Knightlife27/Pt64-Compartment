@@ -32,7 +32,6 @@ def handle_hello():
     }
     return jsonify(response_body), 200
 
-
 @api.route('/homes', methods=['GET'])
 def get_homes():
     base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
@@ -55,7 +54,6 @@ def get_homes():
         url += '&hasFireplace=true'
     if near_school:
         url += '&nearbySchools=true'
-
 
 api_key= 'AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8'
 def get_coordinates(address, api_key):
@@ -87,8 +85,6 @@ def geocode():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @api.route('/apartments', methods=['GET'])
 def get_apartments():
     location = request.args.get('location', 'San Francisco, CA')
@@ -117,22 +113,20 @@ def get_apartments():
     data = response.json()
     return jsonify(data), 200
 
-
-
-def parse_square_footage(preferences):
-    square_footage = preferences.get('square_footage', '').lower()
-    if not square_footage:
+def parse_numeric_preference(value, comparison_words):
+    if not value:
         return None, None
     
-    sqft_match = re.search(r'(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)', square_footage)
-    if sqft_match:
-        sqft = int(sqft_match.group(1))
-        if 'more than' in square_footage or 'greater than' in square_footage or 'over' in square_footage:
-            return sqft, 'more'
-        elif 'less than' in square_footage or 'under' in square_footage:
-            return sqft, 'less'
+    value = value.lower()
+    numeric_match = re.search(r'\d+', value)
+    if numeric_match:
+        number = int(numeric_match.group())
+        if any(word in value for word in ['less', 'under', 'below', 'max']):
+            return number, 'less'
+        elif any(word in value for word in ['more', 'over', 'above', 'min']):
+            return number, 'more'
         else:
-            return sqft, 'exact'
+            return number, 'exact'
     return None, None
 
 def process_zillow_data(data):
@@ -173,13 +167,13 @@ def process_zillow_data(data):
 
 @api.route('/analyze_apartments', methods=['POST'])
 def analyze_apartments():
-    print("Received request to /analyze_apartments")
+    print("\n--- Starting analyze_apartments function ---")
     try:
         if not request.is_json:
             raise ValueError("Request data must be in JSON format")
 
         user_preferences = request.json.get('preferences', {})
-        print("Received preferences:", user_preferences)
+        print("Received preferences:", json.dumps(user_preferences, indent=2))
 
         current_app.logger.info("analyze_apartments endpoint was called")
         
@@ -188,51 +182,55 @@ def analyze_apartments():
         
         location = user_preferences.get("location", "San Francisco, CA")
         sort = user_preferences.get("sort", "Newest")
-        min_price = user_preferences.get("min_price")
-        max_price = user_preferences.get("max_price")
+        
+        # Parse price and square footage inputs
+        price_value, price_comparison = parse_numeric_preference(user_preferences.get('price'), ['less', 'under', 'below', 'max', 'more', 'over', 'above', 'min'])
+        sqft_value, sqft_comparison = parse_numeric_preference(user_preferences.get('square_footage'), ['less', 'under', 'below', 'max', 'more', 'over', 'above', 'min'])
+        
         bedrooms = user_preferences.get('bedrooms')
         bathrooms = user_preferences.get('bathrooms')
         
-        # Parse square footage input
-        sqft_value, sqft_comparison = parse_square_footage(user_preferences)
-        print(f"Parsed square footage: {sqft_value} {sqft_comparison}")
+        print("\nParsed user preferences:")
+        print(f"  Location: {location}")
+        print(f"  Sort: {sort}")
+        print(f"  Price: {price_value} {price_comparison}")
+        print(f"  Square footage: {sqft_value} {sqft_comparison}")
+        print(f"  Bedrooms: {bedrooms}")
+        print(f"  Bathrooms: {bathrooms}")
         
         # Construct URL with parameters
         url = f"{base_url}?location={location}&sort={sort}"
-        if min_price:
-            url += f'&price_min={min_price}'
-        if max_price:
-            url += f'&price_max={max_price}'
-        if sqft_value:
-            if sqft_comparison == 'more':
-                url += f'&sqft_min={sqft_value}'
-            elif sqft_comparison == 'less':
-                url += f'&sqft_max={sqft_value}'
-            else:
-                url += f'&sqft_min={sqft_value}&sqft_max={sqft_value}'
+        if price_value and price_comparison == 'more':
+            url += f'&price_min={price_value}'
+        elif price_value and price_comparison == 'less':
+            url += f'&price_max={price_value}'
         if bedrooms:
             url += f'&beds_min={bedrooms}&beds_max={bedrooms}'
         if bathrooms:
             url += f'&baths_min={bathrooms}&baths_max={bathrooms}'
 
-        print(f"Constructed URL: {url}")  # Print the constructed URL
+        print(f"\nConstructed URL: {url}")
 
         headers = {
             "X-RapidAPI-Key": os.getenv('REACT_APP_RAPIDAPI_KEY'),
             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
         }
 
-        print("Sending request to Zillow API")
+        print("\nSending request to Zillow API")
         response = requests.get(url, headers=headers)
         print(f"Zillow API response status: {response.status_code}")
-        print(f"Full Zillow API response: {json.dumps(response.json(), indent=2)}")  # Print the full response
-        response.raise_for_status()
+        
+        if response.status_code != 200:
+            print(f"Error response from Zillow API: {response.text}")
+            raise Exception(f"Zillow API returned status code {response.status_code}")
+        
         data = response.json()
         print("Received response from Zillow API")
+        print(f"Number of properties in response: {len(data.get('props', []))}")
        
         # Process apartment data
         processed_data = process_zillow_data(data)
-        print(f"Processed {len(processed_data)} apartments")
+        print(f"\nProcessed {len(processed_data)} apartments")
         
         if not processed_data:
             print("No properties found after processing")
@@ -242,21 +240,59 @@ def analyze_apartments():
             }), 200
 
         # Filter processed data based on user preferences
-        filtered_data = [prop for prop in processed_data if (
-            (not min_price or (prop['price'] is not None and prop['price'] >= int(min_price))) and
-            (not max_price or (prop['price'] is not None and prop['price'] <= int(max_price))) and
-            (not sqft_value or 
-             (prop['living_area'] is not None and
-              ((sqft_comparison == 'more' and prop['living_area'] >= sqft_value) or
-               (sqft_comparison == 'less' and prop['living_area'] <= sqft_value) or
-               (sqft_comparison == 'exact' and prop['living_area'] == sqft_value)))) and
-            (not bedrooms or (prop['bedrooms'] is not None and prop['bedrooms'] == int(bedrooms))) and
-            (not bathrooms or (prop['bathrooms'] is not None and prop['bathrooms'] == float(bathrooms)))
-        )]
-        print(f"Filtered {len(filtered_data)} properties matching user preferences")
-        print(f"Square footage filter: {sqft_value} {sqft_comparison}")
-        for prop in filtered_data:
-            print(f"Property living area: {prop['living_area']}")
+        print(f"\nFiltering with user preferences")
+        filtered_data = []
+        for index, prop in enumerate(processed_data):
+            price = prop.get('price')
+            living_area = prop.get('living_area')
+            bedrooms_count = prop.get('bedrooms')
+            bathrooms_count = prop.get('bathrooms')
+
+            print(f"\nEvaluating property {index + 1}:")
+            print(f"  Price: {price}, Living Area: {living_area}, Bedrooms: {bedrooms_count}, Bathrooms: {bathrooms_count}")
+
+            # Apply conditions
+            conditions = []
+
+            if price_value is not None and price is not None:
+                if price_comparison == 'more':
+                    condition = price >= price_value
+                elif price_comparison == 'less':
+                    condition = price <= price_value
+                else:
+                    condition = price == price_value
+                conditions.append(condition)
+                print(f"  Price condition: {condition}")
+
+            if sqft_value is not None and living_area is not None:
+                if sqft_comparison == 'more':
+                    condition = living_area >= sqft_value
+                elif sqft_comparison == 'less':
+                    condition = living_area <= sqft_value
+                else:
+                    condition = living_area == sqft_value
+                conditions.append(condition)
+                print(f"  Square footage condition: {condition}")
+
+            if bedrooms is not None and bedrooms_count is not None:
+                condition = bedrooms_count == int(bedrooms)
+                conditions.append(condition)
+                print(f"  Bedrooms condition: {condition}")
+
+            if bathrooms is not None and bathrooms_count is not None:
+                condition = bathrooms_count == float(bathrooms)
+                conditions.append(condition)
+                print(f"  Bathrooms condition: {condition}")
+
+            if not conditions or all(conditions):
+                filtered_data.append(prop)
+                print("  Property matched all conditions or no conditions were specified")
+            else:
+                print("  Property filtered out")
+
+            print(f"  Applied conditions: {conditions}")
+
+        print(f"\nFiltered {len(filtered_data)} properties matching user preferences")
 
         if not filtered_data:
             print("No properties found after filtering")
@@ -265,13 +301,14 @@ def analyze_apartments():
                 "analysis": "No properties found matching your criteria. Please try adjusting your search parameters."
             }), 200
 
-        print(f"Filtered data sample: {json.dumps(filtered_data[:2], indent=2)}")
+        print(f"\nFiltered data sample: {json.dumps(filtered_data[:2], indent=2)}")
         
         # Analyze with OpenAI
-        sqft_preference = f"Square footage: {sqft_value} {sqft_comparison}" if sqft_value else "Square footage: Not specified"
+        price_preference = f"Price: {price_comparison} than {price_value}" if price_value else "Price: Not specified"
+        sqft_preference = f"Square footage: {sqft_comparison} than {sqft_value}" if sqft_value else "Square footage: Not specified"
         openai_prompt = f"""
         Analyze these properties based on the following user preferences:
-        1. Home price (range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'})
+        1. {price_preference}
         2. {sqft_preference}
         3. Number of bedrooms (preferred: {bedrooms if bedrooms else 'Not specified'})
         4. Number of bathrooms (preferred: {bathrooms if bathrooms else 'Not specified'})
@@ -284,7 +321,7 @@ def analyze_apartments():
         Please provide a detailed analysis of the top 3-5 properties that best match the user's preferences, 
         including mentions of the special features listed above where applicable.
         """
-        print("Sending request to OpenAI")
+        print("\nSending request to OpenAI")
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -303,27 +340,23 @@ def analyze_apartments():
             "analysis": analysis
         }
         
-        print("Sending response back to client")
+        print("\nSending response back to client")
         return jsonify(result), 200
     except Exception as e:
-        print(f"Error in analyze_apartments: {str(e)}")
+        print(f"\nError in analyze_apartments: {str(e)}")
         print(f"Error type: {type(e).__name__}")
         print(f"Error args: {e.args}")
         current_app.logger.error(f"Error in analyze_apartments: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
+    finally:
+        print("--- Ending analyze_apartments function ---\n")
 
 @api.route('/signin', methods=['POST'])
 def create_signin():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
     if email is not None and password is not None:
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-        user = User.query.filter_by(email = email, password = hashed_password).first()
-        if not user: 
-            return jsonify(error = "Invalid credentials"), 404
-        access_token = create_access_token(identity = user.id)
-        return jsonify(access_token = access_token)
-    return jsonify(error = "Missing email or password"), 400
+        hashed_password = hash
 
 @api.route('/user', methods=['GET'])
 @jwt_required()
