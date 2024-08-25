@@ -109,6 +109,24 @@ def get_apartments():
     data = response.json()
     return jsonify(data), 200
 
+def extract_city(location_string):
+    # List of common city names (expand this list as needed)
+    common_cities = ["san diego", "los angeles", "new york", "chicago", "houston", "phoenix", "philadelphia", "san antonio", "san francisco", "dallas"]
+    
+    location_string = location_string.lower()
+    for city in common_cities:
+        if city in location_string:
+            return city.title()  # Return the city name with proper capitalization
+    
+    # If no common city is found, split by common separators and return the first part
+    separators = [" for ", " with ", " less than ", " more than ", " under ", " over "]
+    for separator in separators:
+        if separator in location_string:
+            return location_string.split(separator)[0].strip().title()
+    
+    # If no separator is found, return the whole string (up to the first comma if present)
+    return location_string.split(',')[0].strip().title()
+
 def parse_numeric_preference(value):
     if not value:
         return None, None
@@ -176,7 +194,10 @@ def analyze_apartments():
         # Fetch apartment data
         base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
         
-        location = user_preferences.get("location", "San Francisco, CA")
+        # Extract city from location string
+        full_location = user_preferences.get("location", "San Francisco, CA")
+        location = extract_city(full_location)
+        
         sort = user_preferences.get("sort", "Newest")
         
         # Parse price input
