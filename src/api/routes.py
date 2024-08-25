@@ -1,7 +1,3 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
-
 from flask import Flask, logging, request, current_app, jsonify, url_for, Blueprint
 from api.models import db, User, Categories, Listings
 from api.utils import generate_sitemap, APIException
@@ -113,7 +109,7 @@ def get_apartments():
     data = response.json()
     return jsonify(data), 200
 
-def parse_numeric_preference(value, comparison_words):
+def parse_numeric_preference(value):
     if not value:
         return None, None
     
@@ -183,9 +179,12 @@ def analyze_apartments():
         location = user_preferences.get("location", "San Francisco, CA")
         sort = user_preferences.get("sort", "Newest")
         
-        # Parse price and square footage inputs
-        price_value, price_comparison = parse_numeric_preference(user_preferences.get('price'), ['less', 'under', 'below', 'max', 'more', 'over', 'above', 'min'])
-        sqft_value, sqft_comparison = parse_numeric_preference(user_preferences.get('square_footage'), ['less', 'under', 'below', 'max', 'more', 'over', 'above', 'min'])
+        # Parse price input
+        min_price = user_preferences.get('min_price')
+        max_price = user_preferences.get('max_price')
+        
+        # Parse square footage input
+        sqft_value, sqft_comparison = parse_numeric_preference(user_preferences.get('square_footage'))
         
         bedrooms = user_preferences.get('bedrooms')
         bathrooms = user_preferences.get('bathrooms')
@@ -193,17 +192,18 @@ def analyze_apartments():
         print("\nParsed user preferences:")
         print(f"  Location: {location}")
         print(f"  Sort: {sort}")
-        print(f"  Price: {price_value} {price_comparison}")
+        print(f"  Min price: {min_price}")
+        print(f"  Max price: {max_price}")
         print(f"  Square footage: {sqft_value} {sqft_comparison}")
         print(f"  Bedrooms: {bedrooms}")
         print(f"  Bathrooms: {bathrooms}")
         
         # Construct URL with parameters
         url = f"{base_url}?location={location}&sort={sort}"
-        if price_value and price_comparison == 'more':
-            url += f'&price_min={price_value}'
-        elif price_value and price_comparison == 'less':
-            url += f'&price_max={price_value}'
+        if min_price:
+            url += f'&price_min={min_price}'
+        if max_price:
+            url += f'&price_max={max_price}'
         if bedrooms:
             url += f'&beds_min={bedrooms}&beds_max={bedrooms}'
         if bathrooms:
@@ -254,22 +254,22 @@ def analyze_apartments():
             # Apply conditions
             conditions = []
 
-            if price_value is not None and price is not None:
-                if price_comparison == 'more':
-                    condition = price >= price_value
-                elif price_comparison == 'less':
-                    condition = price <= price_value
-                else:
-                    condition = price == price_value
+            if min_price is not None and price is not None:
+                condition = price >= int(min_price)
                 conditions.append(condition)
-                print(f"  Price condition: {condition}")
+                print(f"  Min price condition: {condition}")
+
+            if max_price is not None and price is not None:
+                condition = price <= int(max_price)
+                conditions.append(condition)
+                print(f"  Max price condition: {condition}")
 
             if sqft_value is not None and living_area is not None:
                 if sqft_comparison == 'more':
                     condition = living_area >= sqft_value
                 elif sqft_comparison == 'less':
                     condition = living_area <= sqft_value
-                else:
+                elif sqft_comparison == 'exact':
                     condition = living_area == sqft_value
                 conditions.append(condition)
                 print(f"  Square footage condition: {condition}")
@@ -304,7 +304,7 @@ def analyze_apartments():
         print(f"\nFiltered data sample: {json.dumps(filtered_data[:2], indent=2)}")
         
         # Analyze with OpenAI
-        price_preference = f"Price: {price_comparison} than {price_value}" if price_value else "Price: Not specified"
+        price_preference = f"Price range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'}"
         sqft_preference = f"Square footage: {sqft_comparison} than {sqft_value}" if sqft_value else "Square footage: Not specified"
         openai_prompt = f"""
         Analyze these properties based on the following user preferences:
