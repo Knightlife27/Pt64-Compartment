@@ -681,3 +681,14 @@
   box-shadow: 0 0 15px rgba(17, 103, 189, 0.5);
   transform: scale(1.02);
 }
+
+.house-meta .property-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.house-meta .property-buttons .btn {
+  flex: 1;
+  margin: 0 5px;
+}
