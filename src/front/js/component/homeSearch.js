@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 function HomeSearch({ onSearchResults }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,8 +20,6 @@ function HomeSearch({ onSearchResults }) {
       if (!preferences) {
         throw new Error('Could not parse input. Please describe your preferences clearly.');
       }
-
-      
 
       const response = await fetch(process.env.BACKEND_URL + "api/analyze_apartments", {
         method: "POST",
@@ -114,19 +113,17 @@ function HomeSearch({ onSearchResults }) {
 
     // Handle square footage preferences
     if (lessThanSqftMatch) {
-      preferences.max_sqft = parseInt(lessThanSqftMatch[1], 10);
+      preferences.square_footage = `less than ${lessThanSqftMatch[1]} square feet`;
     } else if (moreThanSqftMatch) {
-      preferences.min_sqft = parseInt(moreThanSqftMatch[1], 10);
+      preferences.square_footage = `more than ${moreThanSqftMatch[1]} square feet`;
     } else if (squareFeetMatch) {
       const sqft = parseInt(squareFeetMatch[1], 10);
       if (input.includes('less') || input.includes('under') || input.includes('at most')) {
-        preferences.max_sqft = sqft;
+        preferences.square_footage = `less than ${sqft} square feet`;
       } else if (input.includes('more') || input.includes('over') || input.includes('at least')) {
-        preferences.min_sqft = sqft;
+        preferences.square_footage = `more than ${sqft} square feet`;
       } else {
-        // If no qualifier is provided, set both min and max to the same value
-        preferences.min_sqft = sqft;
-        preferences.max_sqft = sqft;
+        preferences.square_footage = `${sqft} square feet`;
       }
     }
 
@@ -135,33 +132,32 @@ function HomeSearch({ onSearchResults }) {
     return Object.keys(preferences).length > 0 ? preferences : null;
   };
 
-
-return (
-  <div className="home-search">
-    <h2 className="search-title">Find Your Dream Home</h2>
-    <form onSubmit={handleSubmit} className="search-form">
-      <div className="search-input-container">
-        <input
-          type="text"
-          className="search-input"
-          value={userPrompt}
-          onChange={(e) => setUserPrompt(e.target.value)}
-          placeholder="Describe your ideal home (e.g., 3 bedrooms, 2 baths, under $300,000 in Miami)"
-          required
-          disabled={loading}
-        />
-      </div>
-      <button type="submit" className="search-button" disabled={loading}>
-        {loading ? 'Searching...' : 'Search Homes'}
-      </button>
-    </form>
-    {error && (
-      <div className="error-message" role="alert">
-        {error}
-      </div>
-    )}
-  </div>
-);
+  return (
+    <div className="home-search">
+      <h2 className="search-title">Find Your Dream Home</h2>
+      <form onSubmit={handleSubmit} className="search-form">
+        <div className="search-input-container">
+          <input
+            type="text"
+            className="search-input"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+            placeholder="Describe your ideal home (e.g., 3 bedrooms, 2 baths, under $300,000, more than 1500 sqft in Miami)"
+            required
+            disabled={loading}
+          />
+        </div>
+        <button type="submit" className="search-button" disabled={loading}>
+          {loading ? 'Searching...' : 'Search Homes'}
+        </button>
+      </form>
+      {error && (
+        <div className="error-message" role="alert">
+          {error}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default HomeSearch;

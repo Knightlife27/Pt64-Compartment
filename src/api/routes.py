@@ -16,6 +16,7 @@ from openai import OpenAI
 import json
 import logging
 import os
+import re
 
 client = OpenAI()
 
@@ -116,6 +117,21 @@ def get_apartments():
     data = response.json()
     return jsonify(data), 200
 
+
+
+def parse_square_footage(preferences):
+    location = preferences.get('location', '').lower()
+    sqft_match = re.search(r'(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)', location)
+    if sqft_match:
+        sqft = int(sqft_match.group(1))
+        if 'more than' in location or 'greater than' in location or 'over' in location:
+            return sqft, 'more'
+        elif 'less than' in location or 'under' in location:
+            return sqft, 'less'
+        else:
+            return sqft, 'exact'
+    return None, None
+
 def process_zillow_data(data):
     processed_listings = []
     props = data.get('props', [])
@@ -144,14 +160,13 @@ def process_zillow_data(data):
             'transitScore': listing.get('transitScore'),
             'bikeScore': listing.get('bikeScore'),
             'crime_rate': listing.get('crimeRate'),
-            'latitude': listing.get('latitude'),  # Add this line
+            'latitude': listing.get('latitude'),
             'longitude': listing.get('longitude'),
             'nearby_amenities': listing.get('nearbyAmenities', []),
         }
         processed_listings.append(processed_listing)
     print(f"Number of processed listings: {len(processed_listings)}")
     return processed_listings
-
 
 @api.route('/analyze_apartments', methods=['POST'])
 def analyze_apartments():
@@ -172,10 +187,11 @@ def analyze_apartments():
         sort = user_preferences.get("sort", "Newest")
         min_price = user_preferences.get("min_price")
         max_price = user_preferences.get("max_price")
-        min_sqft = user_preferences.get("min_sqft")
-        max_sqft = user_preferences.get("max_sqft")
         bedrooms = user_preferences.get('bedrooms')
         bathrooms = user_preferences.get('bathrooms')
+        
+        # Parse square footage input
+        sqft_value, sqft_comparison = parse_square_footage(user_preferences)
         
         # Construct URL with parameters
         url = f"{base_url}?location={location}&sort={sort}"
@@ -183,10 +199,10 @@ def analyze_apartments():
             url += f'&price_min={min_price}'
         if max_price:
             url += f'&price_max={max_price}'
-        if min_sqft:
-            url += f'&sqft_min={min_sqft}'
-        if max_sqft:
-            url += f'&sqft_max={max_sqft}'
+        if sqft_value and sqft_comparison == 'more':
+            url += f'&sqft_min={sqft_value}'
+        elif sqft_value and sqft_comparison == 'less':
+            url += f'&sqft_max={sqft_value}'
         if bedrooms:
             url += f'&beds_min={bedrooms}&beds_max={bedrooms}'
         if bathrooms:
@@ -220,12 +236,15 @@ def analyze_apartments():
 
         # Filter processed data based on user preferences
         filtered_data = [prop for prop in processed_data if (
-            (not min_price or prop['price'] >= int(min_price)) and
-            (not max_price or prop['price'] <= int(max_price)) and
-            (not min_sqft or prop['living_area'] >= int(min_sqft)) and
-            (not max_sqft or prop['living_area'] <= int(max_sqft)) and
-            (not bedrooms or prop['bedrooms'] == int(bedrooms)) and
-            (not bathrooms or prop['bathrooms'] == float(bathrooms))
+            (not min_price or (prop['price'] is not None and prop['price'] >= int(min_price))) and
+            (not max_price or (prop['price'] is not None and prop['price'] <= int(max_price))) and
+            (not sqft_value or 
+             (prop['living_area'] is not None and
+              ((sqft_comparison == 'more' and prop['living_area'] >= sqft_value) or
+               (sqft_comparison == 'less' and prop['living_area'] <= sqft_value) or
+               (sqft_comparison == 'exact' and prop['living_area'] == sqft_value)))) and
+            (not bedrooms or (prop['bedrooms'] is not None and prop['bedrooms'] == int(bedrooms))) and
+            (not bathrooms or (prop['bathrooms'] is not None and prop['bathrooms'] == float(bathrooms)))
         )]
         print(f"Filtered {len(filtered_data)} properties matching user preferences")
 
@@ -239,15 +258,14 @@ def analyze_apartments():
         print(f"Filtered data sample: {json.dumps(filtered_data[:2], indent=2)}")
         
         # Analyze with OpenAI
+        sqft_preference = f"Square footage: {sqft_value} {sqft_comparison}" if sqft_value else "Square footage: Not specified"
         openai_prompt = f"""
-        Analyze these properties based on the following user preferences: {user_preferences}
-
-        Pay special attention to features that are attractive to homeowners, such as:
+        Analyze these properties based on the following user preferences:
         1. Home price (range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'})
-        2. Square footage (range: {min_sqft if min_sqft else 'Not specified'} to {max_sqft if max_sqft else 'Not specified'})
+        2. {sqft_preference}
         3. Number of bedrooms (preferred: {bedrooms if bedrooms else 'Not specified'})
         4. Number of bathrooms (preferred: {bathrooms if bathrooms else 'Not specified'})
-        5. Location
+        5. Location: {location}
 
         For each property, highlight the features that best match the user's preferences and those that could be particularly attractive to homeowners.
 
@@ -348,16 +366,11 @@ def generate_city_list():
     )
     return jsonify(result = json.loads(completion.choices[0].message.content))
 
-# @api.route('/private', methods=['GET'])
-# @jwt_required()
-# def handle_private():
-#     current_user_id = get_jwt_identity()
-#     user = User.query.get(current_user_id)
-    
-#     if user is None:
-#         return jsonify({"msg": "Please signin"})
-#     else :
-#         return jsonify({"user_id": user.id, "email": user.email}), 200
+
+
+
+
+
 
 
 #----------------------------------------JP---------------------------------------
