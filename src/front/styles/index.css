@@ -51,24 +51,28 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 100%;
   background: white;
   border-radius: var(--_br);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .house-image {
   width: 100%;
-  height: 200px;
+  padding-top: 66.67%; /* 3:2 aspect ratio */
   position: relative;
   overflow: hidden;
 }
 
 .house-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
-  loading: lazy;
 }
 
 .apartment-wrapper:hover .house-image img {
@@ -101,9 +105,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   flex-grow: 1;
   width: 100%;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .house-price {
@@ -116,6 +122,8 @@
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 15px;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 .button-wrapper {
@@ -338,12 +346,21 @@
   .apartment-list {
     max-width: 100%;
     min-width: 300px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .apartment-list {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .house-price {
+    font-size: 1.3rem;
+  }
+
+  .house-details, .house-address {
+    font-size: 0.85rem;
   }
 
   .contact-button {
@@ -357,13 +374,25 @@
     grid-template-columns: 1fr;
   }
 
-  .apartment-wrapper {
+  .apartment-wrapper,
+  .house-info {
     max-width: 100%;
   }
   
+  .house-meta {
+    padding: 10px;
+  }
+
+  .house-price {
+    font-size: 1.2rem;
+  }
+
+  .house-details, .house-address {
+    font-size: 0.8rem;
+  }
+
   .contact-button {
-    width: 100%;
-    max-width: none;
+    font-size: 0.9rem;
   }
 }
 
