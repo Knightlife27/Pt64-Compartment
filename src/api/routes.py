@@ -129,7 +129,11 @@ def parse_numeric_preference(value):
 
 def process_zillow_data(data):
     processed_listings = []
-    props = data.get('props', [])
+    if isinstance(data, list):
+        props = data
+    else:
+        props = data.get('props', [])
+    
     print(f"Number of properties in raw data: {len(props)}")
     for listing in props:
         processed_listing = {
@@ -169,8 +173,10 @@ def extract_location_details(location_string):
     location_string = location_string.lower().strip()
     details = {}
     
-    # Extract city (now looking for known city names)
-    known_cities = ['san diego', 'los angeles', 'new york', 'chicago', 'houston', 'phoenix', 'philadelphia', 'san antonio', 'san francisco', 'seattle']
+    # List of known cities (expand this list as needed)
+    known_cities = ['palm springs', 'san diego', 'los angeles', 'new york', 'chicago', 'houston', 'phoenix', 'philadelphia', 'san antonio', 'san francisco', 'seattle']
+    
+    # Extract city (prioritize known cities)
     for city in known_cities:
         if city in location_string:
             details['city'] = city.title()
@@ -217,9 +223,9 @@ def analyze_apartments():
         location_details = extract_location_details(full_location)
         location = location_details.get('city')
         
-        # If no city was extracted, use the first word of the input
+        # If no city was extracted, use the full location string
         if not location:
-            location = full_location.split()[0]
+            location = full_location
         
         print(f"Extracted location for search: {location}")
         
@@ -273,13 +279,11 @@ def analyze_apartments():
         print("Received response from Zillow API")
         if isinstance(data, list):
             print(f"Number of properties in response: {len(data)}")
-            processed_data = process_zillow_data({'props': data})
+            processed_data = process_zillow_data(data)
         else:
             print(f"Number of properties in response: {len(data.get('props', []))}")
             processed_data = process_zillow_data(data)
-       
-        # Process apartment data
-        processed_data = process_zillow_data(data)
+        
         print(f"\nProcessed {len(processed_data)} apartments")
         
         if not processed_data:
