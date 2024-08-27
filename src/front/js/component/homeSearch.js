@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 function HomeSearch({ onSearchResults }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,7 +31,7 @@ function HomeSearch({ onSearchResults }) {
       }
 
       const responseBody = await response.json();
-      console.log("Response received:", responseBody); // Log the entire response
+      console.log("Response received:", responseBody);
 
       if (responseBody.apartments && responseBody.apartments.length > 0) {
         const processedApartments = processApartments(responseBody.apartments);
@@ -52,11 +51,9 @@ function HomeSearch({ onSearchResults }) {
 
   const processApartments = (apartments) => {
     return apartments.map(apt => {
-      // Check if latitude and longitude are directly available
       let lat = apt.latitude;
       let lng = apt.longitude;
 
-      // If not, check if they're nested under location.address.coordinate
       if (!lat && !lng && apt.location && apt.location.address && apt.location.address.coordinate) {
         lat = apt.location.address.coordinate.lat;
         lng = apt.location.address.coordinate.lon;
@@ -71,28 +68,54 @@ function HomeSearch({ onSearchResults }) {
         bedrooms: apt.bedrooms,
         bathrooms: apt.bathrooms,
         livingArea: apt.living_area,
-        imageUrl: apt.image_url || apt.imgSrc, // Include the image URL
-        // Include any other relevant properties
+        imageUrl: apt.image_url || apt.imgSrc,
       };
-    }).filter(apt => apt.latitude && apt.longitude); // Only include apartments with valid coordinates
+    }).filter(apt => apt.latitude && apt.longitude);
   };
 
   const parsePreferences = (input) => {
     const preferences = {};
-    const locationMatch = input.match(/in (\w+(?:,?\s*\w+)*)/i);
+    
+    // More flexible location matching
+    const locationPatterns = [
+      /(?:in|at|near|around)\s+(\w+(?:,?\s*\w+)*)/i,
+      /(\w+(?:,?\s*\w+)*)\s+(?:area|city|town|neighborhood)/i,
+      /(\w+,\s*[A-Z]{2})/,
+      /(\w+(?:\s+\w+){0,2})(?:\s+\d+\s*(?:bed|bath|sq|square|ft|feet|bedroom|bathroom))/i
+    ];
+
+    let locationMatch;
+    for (let pattern of locationPatterns) {
+      locationMatch = input.match(pattern);
+      if (locationMatch) {
+        preferences.location = locationMatch[1].trim();
+        break;
+      }
+    }
+
+    // If no location found, try to extract the first 1-3 word phrase that's not matched by other patterns
+    if (!preferences.location) {
+      const words = input.split(/\s+/);
+      for (let i = 0; i < words.length; i++) {
+        const possibleLocation = words.slice(i, i + 3).join(' ');
+        if (!/\d/.test(possibleLocation) && 
+            !/bed|bath|sq|square|ft|feet|bedroom|bathroom|house|apartment|condo|townhouse/i.test(possibleLocation)) {
+          preferences.location = possibleLocation;
+          break;
+        }
+      }
+    }
+    
     const homeTypeMatch = input.match(/(apartment|house|condo|townhouse)/i);
     const bedroomsMatch = input.match(/(\d+)\s*bedrooms?/i);
     const bathroomsMatch = input.match(/(\d+)\s*bathrooms?/i);
     const priceMatch = input.match(/(\d{1,3}(?:,\d{3})*)\s*to\s*(\d{1,3}(?:,\d{3})*)\s*(?:dollars|usd|$)/i);
     const lessThanPriceMatch = input.match(/less\s*than\s*(\d{1,3}(?:,\d{3})*)\s*(?:dollars|usd|$)/i);
     const moreThanPriceMatch = input.match(/more\s*than\s*(\d{1,3}(?:,\d{3})*)\s*(?:dollars|usd|$)/i);
-
-    // Updated square feet matching
     const squareFeetMatch = input.match(/(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)/i);
     const lessThanSqftMatch = input.match(/less\s*than\s*(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)/i);
     const moreThanSqftMatch = input.match(/more\s*than\s*(\d+)\s*(?:sq(?:uare)?\s*f(?:ee)?t|sqft)/i);
 
-    if (locationMatch) preferences.location = locationMatch[1];
     if (homeTypeMatch) preferences.home_type = homeTypeMatch[1].charAt(0).toUpperCase() + homeTypeMatch[1].slice(1);
     if (bedroomsMatch) preferences.bedrooms = parseInt(bedroomsMatch[1], 10);
     if (bathroomsMatch) preferences.bathrooms = parseInt(bathroomsMatch[1], 10);
@@ -106,9 +129,15 @@ function HomeSearch({ onSearchResults }) {
     } else if (moreThanPriceMatch) {
       preferences.min_price = parseInt(moreThanPriceMatch[1].replace(/,/g, ''), 10);
     } else if (input.includes('less') || input.includes('under') || input.includes('at most')) {
-      preferences.max_price = parseInt(input.match(/(\d{1,3}(?:,\d{3})*)/)[1].replace(/,/g, ''), 10);
+      const priceMatch = input.match(/(\d{1,3}(?:,\d{3})*)/);
+      if (priceMatch) {
+        preferences.max_price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+      }
     } else if (input.includes('more') || input.includes('over') || input.includes('at least')) {
-      preferences.min_price = parseInt(input.match(/(\d{1,3}(?:,\d{3})*)/)[1].replace(/,/g, ''), 10);
+      const priceMatch = input.match(/(\d{1,3}(?:,\d{3})*)/);
+      if (priceMatch) {
+        preferences.min_price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+      }
     }
 
     // Handle square footage preferences

@@ -113,7 +113,7 @@ def parse_numeric_preference(value):
     if not value:
         return None, None
     
-    value = value.lower()
+    value = str(value).lower()
     numeric_match = re.search(r'\d+', value)
     if numeric_match:
         number = int(numeric_match.group())
@@ -169,10 +169,18 @@ def extract_location_details(location_string):
     location_string = location_string.lower().strip()
     details = {}
     
-    # Extract city (now capturing the full name)
-    city_match = re.search(r'^([\w\s]+?)(?=\s+\d+|$)', location_string)
-    if city_match:
-        details['city'] = city_match.group(1).strip().title()
+    # Extract city (now looking for known city names)
+    known_cities = ['san diego', 'los angeles', 'new york', 'chicago', 'houston', 'phoenix', 'philadelphia', 'san antonio', 'san francisco', 'seattle']
+    for city in known_cities:
+        if city in location_string:
+            details['city'] = city.title()
+            break
+    
+    if 'city' not in details:
+        # If no known city found, try to extract any capitalized words
+        city_match = re.search(r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b', location_string.title())
+        if city_match:
+            details['city'] = city_match.group(1)
     
     print(f"Extracted city: {details.get('city', 'None')}")
     
@@ -181,7 +189,7 @@ def extract_location_details(location_string):
     if bedroom_match:
         details['bedrooms'] = int(bedroom_match.group(1))
     
-    # Extract number of bathrooms (including 'bath', 'baths', 'bathroom', 'bathrooms')
+    # Extract number of bathrooms
     bathroom_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:bath|baths|bathroom|bathrooms)', location_string)
     if bathroom_match:
         details['bathrooms'] = float(bathroom_match.group(1))
@@ -263,7 +271,12 @@ def analyze_apartments():
         
         data = response.json()
         print("Received response from Zillow API")
-        print(f"Number of properties in response: {len(data.get('props', []))}")
+        if isinstance(data, list):
+            print(f"Number of properties in response: {len(data)}")
+            processed_data = process_zillow_data({'props': data})
+        else:
+            print(f"Number of properties in response: {len(data.get('props', []))}")
+            processed_data = process_zillow_data(data)
        
         # Process apartment data
         processed_data = process_zillow_data(data)
