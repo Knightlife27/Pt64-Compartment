@@ -34,7 +34,9 @@ const ApartmentList = ({ apartments }) => {
                 {apartment.bedrooms} bd | {apartment.bathrooms} ba | {apartment.livingArea || apartment.living_area} sqft
               </div>
               <div className="house-address">{apartment.address}</div>
-              <button className="contact-button" onClick={() => handleContactAgent(apartment)}>Contact Agent</button>
+              <div className="button-wrapper">
+                <button className="contact-button" onClick={() => handleContactAgent(apartment)}>Contact Agent</button>
+              </div>
             </div>
           </div>
         );

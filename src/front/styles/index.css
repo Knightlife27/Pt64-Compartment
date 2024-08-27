@@ -21,7 +21,7 @@
   flex: 1;
   max-width: calc(100% - 20px);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   justify-items: center;
   background: white;
@@ -32,11 +32,13 @@
 /* House info styles */
 .apartment-wrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   transition: all 0.3s ease;
   border-radius: 8px;
-  overflow: hidden; /* This ensures the content doesn't overflow on hover */
+  overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .apartment-wrapper:hover {
@@ -66,6 +68,7 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  loading: lazy;
 }
 
 .apartment-wrapper:hover .house-image img {
@@ -95,6 +98,12 @@
 
 .house-meta {
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .house-price {
@@ -109,6 +118,14 @@
   margin-bottom: 15px;
 }
 
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 15px 15px;
+  box-sizing: border-box;
+}
+
 .contact-button {
   background-color: #e4002b;
   color: white;
@@ -119,6 +136,7 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 100%;
+  max-width: 200px;
 }
 
 .contact-button:hover {
@@ -319,7 +337,33 @@
 
   .apartment-list {
     max-width: 100%;
-    min-width: 400px;
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .apartment-list {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .contact-button {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .apartment-list {
+    grid-template-columns: 1fr;
+  }
+
+  .apartment-wrapper {
+    max-width: 100%;
+  }
+  
+  .contact-button {
+    width: 100%;
+    max-width: none;
   }
 }
 
