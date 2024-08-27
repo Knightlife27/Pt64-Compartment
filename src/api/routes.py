@@ -109,24 +109,6 @@ def get_apartments():
     data = response.json()
     return jsonify(data), 200
 
-def extract_city(location_string):
-    # List of common city names (expand this list as needed)
-    common_cities = ["san diego", "los angeles", "new york", "chicago", "houston", "phoenix", "philadelphia", "san antonio", "san francisco", "dallas"]
-    
-    location_string = location_string.lower()
-    for city in common_cities:
-        if city in location_string:
-            return city.title()  # Return the city name with proper capitalization
-    
-    # If no common city is found, split by common separators and return the first part
-    separators = [" for ", " with ", " less than ", " more than ", " under ", " over "]
-    for separator in separators:
-        if separator in location_string:
-            return location_string.split(separator)[0].strip().title()
-    
-    # If no separator is found, return the whole string (up to the first comma if present)
-    return location_string.split(',')[0].strip().title()
-
 def parse_numeric_preference(value):
     if not value:
         return None, None
@@ -142,6 +124,8 @@ def parse_numeric_preference(value):
         else:
             return number, 'exact'
     return None, None
+
+
 
 def process_zillow_data(data):
     processed_listings = []
@@ -179,6 +163,32 @@ def process_zillow_data(data):
     print(f"Number of processed listings: {len(processed_listings)}")
     return processed_listings
 
+
+def extract_location_details(location_string):
+    print(f"Extracting details from: {location_string}")
+    location_string = location_string.lower().strip()
+    details = {}
+    
+    # Extract city (now capturing the full name)
+    city_match = re.search(r'^([\w\s]+?)(?=\s+\d+|$)', location_string)
+    if city_match:
+        details['city'] = city_match.group(1).strip().title()
+    
+    print(f"Extracted city: {details.get('city', 'None')}")
+    
+    # Extract number of bedrooms
+    bedroom_match = re.search(r'(\d+)\s*(?:bed|bedroom)', location_string)
+    if bedroom_match:
+        details['bedrooms'] = int(bedroom_match.group(1))
+    
+    # Extract number of bathrooms (including 'bath', 'baths', 'bathroom', 'bathrooms')
+    bathroom_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:bath|baths|bathroom|bathrooms)', location_string)
+    if bathroom_match:
+        details['bathrooms'] = float(bathroom_match.group(1))
+    
+    print(f"Extracted details: {details}")
+    return details
+
 @api.route('/analyze_apartments', methods=['POST'])
 def analyze_apartments():
     print("\n--- Starting analyze_apartments function ---")
@@ -194,9 +204,16 @@ def analyze_apartments():
         # Fetch apartment data
         base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
         
-        # Extract city from location string
+        # Extract location details from location string
         full_location = user_preferences.get("location", "San Francisco, CA")
-        location = extract_city(full_location)
+        location_details = extract_location_details(full_location)
+        location = location_details.get('city')
+        
+        # If no city was extracted, use the first word of the input
+        if not location:
+            location = full_location.split()[0]
+        
+        print(f"Extracted location for search: {location}")
         
         sort = user_preferences.get("sort", "Newest")
         
@@ -207,8 +224,8 @@ def analyze_apartments():
         # Parse square footage input
         sqft_value, sqft_comparison = parse_numeric_preference(user_preferences.get('square_footage'))
         
-        bedrooms = user_preferences.get('bedrooms')
-        bathrooms = user_preferences.get('bathrooms')
+        bedrooms = location_details.get('bedrooms') or user_preferences.get('bedrooms')
+        bathrooms = location_details.get('bathrooms') or user_preferences.get('bathrooms')
         
         print("\nParsed user preferences:")
         print(f"  Location: {location}")
@@ -236,7 +253,6 @@ def analyze_apartments():
             "X-RapidAPI-Key": os.getenv('REACT_APP_RAPIDAPI_KEY'),
             "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
         }
-
         print("\nSending request to Zillow API")
         response = requests.get(url, headers=headers)
         print(f"Zillow API response status: {response.status_code}")
@@ -299,7 +315,6 @@ def analyze_apartments():
                 condition = bedrooms_count == int(bedrooms)
                 conditions.append(condition)
                 print(f"  Bedrooms condition: {condition}")
-
             if bathrooms is not None and bathrooms_count is not None:
                 condition = bathrooms_count == float(bathrooms)
                 conditions.append(condition)
@@ -328,12 +343,17 @@ def analyze_apartments():
         price_preference = f"Price range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'}"
         sqft_preference = f"Square footage: {sqft_comparison} than {sqft_value}" if sqft_value else "Square footage: Not specified"
         openai_prompt = f"""
-        Analyze these properties based on the following user preferences:
+        First, analyze the following user input to extract a city name:
+        "{user_preferences.get('location', '')}"
+
+        If you find a city name in the input, use it as the location. If not, use the default location provided.
+
+        Now, analyze these properties based on the following user preferences:
         1. {price_preference}
         2. {sqft_preference}
         3. Number of bedrooms (preferred: {bedrooms if bedrooms else 'Not specified'})
         4. Number of bathrooms (preferred: {bathrooms if bathrooms else 'Not specified'})
-        5. Location: {location}
+        5. Location: [Insert the city name you extracted, or use {location} if no city was found]
 
         For each property, highlight the features that best match the user's preferences and those that could be particularly attractive to homeowners.
 
@@ -341,6 +361,8 @@ def analyze_apartments():
 
         Please provide a detailed analysis of the top 3-5 properties that best match the user's preferences, 
         including mentions of the special features listed above where applicable.
+
+        Begin your response by stating the city name you extracted from the user input, or mention that no city name was found and you're using the default location.
         """
         print("\nSending request to OpenAI")
         completion = client.chat.completions.create(
@@ -371,6 +393,11 @@ def analyze_apartments():
         return jsonify({"error": str(e)}), 500
     finally:
         print("--- Ending analyze_apartments function ---\n")
+
+def extract_city(text):
+    # Simple regex to match city names (assuming they start with a capital letter)
+    match = re.search(r'\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\b', text)
+    return match.group(1) if match else None
 
 @api.route('/signin', methods=['POST'])
 def create_signin():
