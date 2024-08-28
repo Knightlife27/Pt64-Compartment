@@ -104,12 +104,13 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   flex-grow: 1;
   width: 100%;
   box-sizing: border-box;
   text-align: center;
+  height: 200px; /* Set a fixed height - adjust as needed */
 }
 
 .house-price {
@@ -126,12 +127,20 @@
   word-wrap: break-word;
 }
 
+.house-address {
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 .button-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
   padding: 0 15px 15px;
   box-sizing: border-box;
+  margin-top: auto;
 }
 
 .contact-button {
@@ -178,7 +187,7 @@
 }
 
 .search-input {
-  width: 100%;
+  width: 50%;
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ddd;
@@ -355,6 +364,10 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 
+  .house-meta {
+    height: 180px; /* Slightly reduce height for smaller screens */
+  }
+
   .house-price {
     font-size: 1.3rem;
   }
@@ -380,6 +393,7 @@
   }
   
   .house-meta {
+    height: 160px; /* Further reduce height for very small screens */
     padding: 10px;
   }
 

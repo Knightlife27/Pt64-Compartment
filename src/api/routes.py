@@ -191,14 +191,43 @@ def extract_location_details(location_string):
     print(f"Extracted city: {details.get('city', 'None')}")
     
     # Extract number of bedrooms
-    bedroom_match = re.search(r'(\d+)\s*(?:bed|bedroom)', location_string)
-    if bedroom_match:
-        details['bedrooms'] = int(bedroom_match.group(1))
+    bedroom_patterns = [
+        r'(\d+)\s*(?:br\b|bed(?:room)?s?\b)',
+        r'(\d+)[-\s]bed(?:room)?s?\b'
+    ]
+    for pattern in bedroom_patterns:
+        bedroom_match = re.search(pattern, location_string)
+        if bedroom_match:
+            details['bedrooms'] = int(bedroom_match.group(1))
+            break
     
     # Extract number of bathrooms
-    bathroom_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:bath|baths|bathroom|bathrooms)', location_string)
-    if bathroom_match:
-        details['bathrooms'] = float(bathroom_match.group(1))
+    bathroom_patterns = [
+        r'(\d+(?:\.\d+)?)\s*(?:ba\b|bath(?:room)?s?\b)',
+        r'(\d+(?:\.\d+)?)[-\s]bath(?:room)?s?\b'
+    ]
+    for pattern in bathroom_patterns:
+        bathroom_match = re.search(pattern, location_string)
+        if bathroom_match:
+            details['bathrooms'] = float(bathroom_match.group(1))
+            break
+    
+    # Extract price
+    price_patterns = [
+        r'\$?(\d+(?:\.\d+)?)\s*(?:k|thousand)',
+        r'\$?(\d+(?:\.\d+)?)\s*(?:m|million)',
+        r'\$?(\d+(?:,\d{3})*(?:\.\d+)?)'
+    ]
+    for pattern in price_patterns:
+        price_match = re.search(pattern, location_string)
+        if price_match:
+            price = float(price_match.group(1).replace(',', ''))
+            if 'k' in price_match.group() or 'thousand' in price_match.group():
+                price *= 1000
+            elif 'm' in price_match.group() or 'million' in price_match.group():
+                price *= 1000000
+            details['price'] = price
+            break
     
     print(f"Extracted details: {details}")
     return details
@@ -232,7 +261,7 @@ def analyze_apartments():
         sort = user_preferences.get("sort", "Newest")
         
         # Parse price input
-        min_price = user_preferences.get('min_price')
+        min_price = location_details.get('price') or user_preferences.get('min_price')
         max_price = user_preferences.get('max_price')
         
         # Parse square footage input
@@ -360,26 +389,23 @@ def analyze_apartments():
         price_preference = f"Price range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'}"
         sqft_preference = f"Square footage: {sqft_comparison} than {sqft_value}" if sqft_value else "Square footage: Not specified"
         openai_prompt = f"""
-        First, analyze the following user input to extract a city name:
+        Analyze the following user input to extract relevant home search criteria:
         "{user_preferences.get('location', '')}"
 
-        If you find a city name in the input, use it as the location. If not, use the default location provided.
+        Please extract and provide the following information:
+        1. City name
+        2. Number of bedrooms (if specified)
+        3. Number of bathrooms (if specified)
+        4. Price range (if specified)
+        5. Any other relevant criteria mentioned (e.g., square footage, amenities)
 
-        Now, analyze these properties based on the following user preferences:
-        1. {price_preference}
-        2. {sqft_preference}
-        3. Number of bedrooms (preferred: {bedrooms if bedrooms else 'Not specified'})
-        4. Number of bathrooms (preferred: {bathrooms if bathrooms else 'Not specified'})
-        5. Location: [Insert the city name you extracted, or use {location} if no city was found]
-
-        For each property, highlight the features that best match the user's preferences and those that could be particularly attractive to homeowners.
-
+        Then, analyze these properties based on the extracted preferences:
         Property data: {json.dumps(filtered_data)}
 
         Please provide a detailed analysis of the top 3-5 properties that best match the user's preferences, 
         including mentions of the special features listed above where applicable.
 
-        Begin your response by stating the city name you extracted from the user input, or mention that no city name was found and you're using the default location.
+        Begin your response with a summary of the extracted search criteria, then proceed with the property analysis.
         """
         print("\nSending request to OpenAI")
         completion = client.chat.completions.create(
