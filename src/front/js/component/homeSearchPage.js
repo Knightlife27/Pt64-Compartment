@@ -5,7 +5,6 @@ import { Container, Row, Col } from 'react-bootstrap'
 import HomeMapSearchBar from "./homeMapSearchBar";
 import newLogo from "../../../assets/newLogo.png";
 
-
 export const HomeSearchPage = () => {
   const [mapData, setMapData] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
@@ -152,12 +151,20 @@ export const HomeSearchPage = () => {
       </div>
       
       <div className="search-column">
-        <div className="search-input">
-          <HomeMapSearchBar onSearch={handleSearch} />
-        </div>
-        <div className="logo">
-          <img src={newLogo} alt="Find Your Nest" className="nest-image" />
-        </div>
+        <Container fluid>
+          <Row className="align-items-center">
+            <Col xs={12} md={8}>
+              <div className="search-input">
+                <HomeMapSearchBar onSearch={handleSearch} />
+              </div>
+            </Col>
+            <Col xs={12} md={4}>
+              <div className="logo">
+                <img src={newLogo} alt="Find Your Nest" className="nest-image img-fluid" />
+              </div>
+            </Col>
+          </Row>
+        </Container>
         <div className="search-results">
           {isLoading && <p className="loading-message">Loading...</p>}
           {error && <p className="error-message">{error}</p>}

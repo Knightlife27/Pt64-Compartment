@@ -137,17 +137,16 @@ const defaultCenter = {
   lng: -122.4194
 };
 
-// Custom marker SVGs
 const markerSVG = {
   default: encodeURIComponent(`
     <svg width="32" height="48" viewBox="0 0 32 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 48 16 48C16 48 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="#E53935"/>
+      <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 48 16 48C16 48 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="#77d0d3"/>
       <circle cx="16" cy="16" r="8" fill="white"/>
     </svg>
   `),
   selected: encodeURIComponent(`
     <svg width="32" height="48" viewBox="0 0 32 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 48 16 48C16 48 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="#1E88E5"/>
+      <path d="M16 0C7.16344 0 0 7.16344 0 16C0 28 16 48 16 48C16 48 32 28 32 16C32 7.16344 24.8366 0 16 0Z" fill="#5fb8bb"/>
       <circle cx="16" cy="16" r="8" fill="white"/>
     </svg>
   `)
