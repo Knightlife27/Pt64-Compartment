@@ -3,6 +3,8 @@ import MapComponent from "./homeMap";
 import ApartmentList from "./apartmentList";
 import { Container, Row, Col } from 'react-bootstrap'
 import HomeMapSearchBar from "./homeMapSearchBar";
+import newLogo from "../../../assets/newLogo.png";
+
 
 export const HomeSearchPage = () => {
   const [mapData, setMapData] = useState([]);
@@ -152,6 +154,9 @@ export const HomeSearchPage = () => {
       <div className="search-column">
         <div className="search-input">
           <HomeMapSearchBar onSearch={handleSearch} />
+        </div>
+        <div className="logo">
+          <img src={newLogo} alt="Find Your Nest" className="nest-image" />
         </div>
         <div className="search-results">
           {isLoading && <p className="loading-message">Loading...</p>}
