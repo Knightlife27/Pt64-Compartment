@@ -160,8 +160,14 @@
 }
 
 .nest-image {
-  max-height: 15vw;
+  min-height: 20vw;
   width: auto;
+  margin-right: 15vw;
+}
+
+.logo.text-center.text-md-end {
+  height: 22vw;
+  width: 22vw;
 }
 
 .map-container {

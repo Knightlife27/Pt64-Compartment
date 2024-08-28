@@ -138,66 +138,65 @@ export const HomeSearchPage = () => {
 
   return (
     <div className="search-page">
-      <div className="map-column">
-        <div className="map-container map-card">
-          <div className="map-title">Find Your Nest</div>
-          <div className="map-component">
-            <MapComponent 
-              searchResults={mapData} 
-              onMarkerClick={handleMarkerClick}
-            />
-          </div>
-        </div>
-      </div>
-      
-      <div className="search-column">
-        <Container fluid>
-          <Row className="align-items-center">
-            <Col xs={12} md={8}>
-              <div className="search-input">
-                <HomeMapSearchBar onSearch={handleSearch} />
+      <Container fluid className="h-100">
+        <Row className="h-100">
+          <Col md={6} lg={7} className="map-column p-0">
+            <div className="map-container h-100">
+              <div className="map-title">Find Your Nest</div>
+              <div className="map-component h-100">
+                <MapComponent 
+                  searchResults={mapData} 
+                  onMarkerClick={handleMarkerClick}
+                />
               </div>
-            </Col>
-            <Col xs={12} md={4}>
-              <div className="logo">
-                <img src={newLogo} alt="Find Your Nest" className="nest-image img-fluid" />
-              </div>
-            </Col>
-          </Row>
-        </Container>
-        <div className="search-results">
-          {isLoading && <p className="loading-message">Loading...</p>}
-          {error && <p className="error-message">{error}</p>}
-          {!isLoading && !error && searchResults && (
-            <>
-              <h2>Search Results</h2>
-              {searchResults.apartments && searchResults.apartments.length > 0 ? (
-                <Container fluid>
-                  {groupApartments(searchResults.apartments).map((pair, rowIndex) => (
-                    <Row key={rowIndex} className="apartment-row mb-4">
-                      {pair.map((apartment, colIndex) => {
-                        const index = rowIndex * 3 + colIndex;
-                        return (
-                          <Col key={apartment.id} xs={12} md={4}>
+            </div>
+          </Col>
+          
+          <Col md={6} lg={5} className="search-column d-flex flex-column">
+            <Container fluid className="py-3">
+              <Row className="align-items-center mb-3">
+                <Col xs={12} md={8}>
+                  <div className="search-input">
+                    <HomeMapSearchBar onSearch={handleSearch} />
+                  </div>
+                </Col>
+                <Col xs={12} md={4}>
+                  <div className="logo text-center text-md-end">
+                    <img src={newLogo} alt="Find Your Nest" className="nest-image img-fluid" style={{maxHeight: '60px'}} />
+                  </div>
+                </Col>
+              </Row>
+            </Container>
+            <div className="search-results flex-grow-1 overflow-auto">
+              {isLoading && <p className="loading-message">Loading...</p>}
+              {error && <p className="error-message">{error}</p>}
+              {!isLoading && !error && searchResults && (
+                <>
+                  <h2 className="mb-3">Search Results</h2>
+                  {searchResults.apartments && searchResults.apartments.length > 0 ? (
+                    <Container fluid>
+                      <Row>
+                        {searchResults.apartments.map((apartment, index) => (
+                          <Col key={apartment.id} xs={12} md={6} lg={4} className="mb-4">
                             <div 
                               ref={el => apartmentRefs.current[index] = el}
-                              className="apartment-wrapper"
+                              className="apartment-wrapper h-100"
                             >
                               <ApartmentList apartments={[apartment]} />
                             </div>
                           </Col>
-                        );
-                      })}
-                    </Row>
-                  ))}
-                </Container>
-              ) : (
-                <p>No apartments found. Try adjusting your search criteria.</p>
+                        ))}
+                      </Row>
+                    </Container>
+                  ) : (
+                    <p>No apartments found. Try adjusting your search criteria.</p>
+                  )}
+                </>
               )}
-            </>
-          )}
-        </div>
-      </div>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };
