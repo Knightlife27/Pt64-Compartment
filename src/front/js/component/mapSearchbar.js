@@ -13,7 +13,7 @@ export const MapSearchBar = ({ onSearch }) => {
 
   return (
     <div className="map-search-bar">
-      <form onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <div className="input-group">
           <input
             type="text"

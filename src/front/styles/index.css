@@ -187,7 +187,7 @@
 }
 
 .search-input {
-  width: 50%;
+  width: 100%;
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ddd;
@@ -433,3 +433,5 @@
 .highlighted .house-info {
   background-color: #f8f9fa;
 }
+
+
