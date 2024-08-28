@@ -459,3 +459,10 @@
   box-sizing: border-box;
   margin-top: auto;
 }
+
+.align-items-center.mb-3 {
+  /* display: flex;
+  justify-content: center; */
+  margin-right: 10vw;
+}
+

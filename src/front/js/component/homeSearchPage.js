@@ -104,14 +104,6 @@ export const HomeSearchPage = () => {
     setSearchResults(null);
   };
 
-  const groupApartments = (apartments) => {
-    const grouped = [];
-    for (let i = 0; i < apartments.length; i += 3) {
-      grouped.push(apartments.slice(i, i + 3));
-    }
-    return grouped;
-  }
-
   const handleMarkerClick = (index) => {
     setSelectedApartmentIndex(index);
     if (apartmentRefs.current[index]) {
@@ -138,12 +130,12 @@ export const HomeSearchPage = () => {
 
   return (
     <div className="search-page">
-      <Container fluid className="h-100">
-        <Row className="h-100">
-          <Col md={6} lg={7} className="map-column p-0">
-            <div className="map-container h-100">
+      <Container fluid>
+        <Row>
+          <Col md={6} lg={7} className="map-column">
+            <div className="map-container">
               <div className="map-title">Find Your Nest</div>
-              <div className="map-component h-100">
+              <div className="map-component">
                 <MapComponent 
                   searchResults={mapData} 
                   onMarkerClick={handleMarkerClick}
@@ -152,7 +144,7 @@ export const HomeSearchPage = () => {
             </div>
           </Col>
           
-          <Col md={6} lg={5} className="search-column d-flex flex-column">
+          <Col md={6} lg={5} className="search-column">
             <Container fluid className="py-3">
               <Row className="align-items-center mb-3">
                 <Col xs={12} md={8}>
@@ -167,7 +159,7 @@ export const HomeSearchPage = () => {
                 </Col>
               </Row>
             </Container>
-            <div className="search-results flex-grow-1 overflow-auto">
+            <div className="search-results">
               {isLoading && <p className="loading-message">Loading...</p>}
               {error && <p className="error-message">{error}</p>}
               {!isLoading && !error && searchResults && (
