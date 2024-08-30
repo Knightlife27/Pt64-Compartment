@@ -18,12 +18,14 @@ export const Navbar = () => {
             }}
         >
             <div className="container">
-            <img
-                    src={newLogo}
-                    alt="Find Your Nest"
-                    className="nest-image img-fluid"
-                    style={{ maxHeight: '120px', maxWidth: '100%', marginBottom: '20px' }}
-                  />
+            <Link to="/searchpage">
+                    <img
+                        src={newLogo}
+                        alt="Find Your Nest"
+                        className="nest-image img-fluid"
+                        style={{ maxHeight: '120px', maxWidth: '100%', marginBottom: '20px', cursor: 'pointer' }}
+                    />
+                </Link>
                 {/* <Link to="/" className="navbar-brand d-flex align-items-center" style={{ color: "#77d0d3", fontWeight: "bold", fontSize: "1.5rem" }}>
                     Nestify.AI
                 </Link> */}
@@ -44,7 +46,7 @@ export const Navbar = () => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <NavLink
                                 to="/homeSearchPage"
                                 className="nav-link"
@@ -71,7 +73,7 @@ export const Navbar = () => {
                             >
                                 Rent
                             </NavLink>
-                        </li>
+                        </li> */}
                     </ul>
                     <ul className="navbar-nav">
                         <li className="nav-item">
