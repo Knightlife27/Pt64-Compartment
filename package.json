@@ -6,9 +6,12 @@
 	"version": "1.0.1",
 	"description": "",
 	"main": "index.js",
+	"homepage": "https://knightlife27.github.io/Pt64-Compartment/",
 	"scripts": {
 		"start": "webpack-dev-server --config webpack.dev.js --port 3000",
-		"build": "webpack --config webpack.prod.js"
+		"build": "webpack --config webpack.prod.js",
+		"predeploy": "npm run build",
+		"deploy": "gh-pages -d dist"
 	},
 	"author": {
 		"name": "Alejandro Sanchez",

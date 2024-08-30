@@ -37,7 +37,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Category />} path="/categories" />
                         <Route element={<CategoryFavorites />} path="/categories/:category" />
-                        <Route element={<SearchPage />} path="/" />
+                        <Route element={<HomeSearchPage />} path="/" />
                         <Route element={<HomeMapComponent />} path="/homeMap" />
                       
 
@@ -45,7 +45,7 @@ const Layout = () => {
                         <Route element={<SignIn />} path="/signIn" />
                         <Route element={<App />} path="/cityfinder" />
                         {/* <Route element={<HomeSearch />} path="/homesearch" /> */}
-                        <Route element={<HomeSearchPage/>} path="/searchPage" />
+                        {/* <Route element={<HomeSearchPage/>} path="/searchPage" /> */}
 
                         <Route element={<HomeSearchPage />} path="/homeSearchpage" />
                         <Route element={<Single />} path="/single/:theid" />
