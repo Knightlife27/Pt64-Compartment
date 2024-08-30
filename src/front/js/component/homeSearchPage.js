@@ -61,14 +61,15 @@ export const HomeSearchPage = () => {
     return apartments.map(apt => {
       let lat = apt.latitude;
       let lng = apt.longitude;
-
+  
       if (!lat && !lng && apt.location && apt.location.address && apt.location.address.coordinate) {
         lat = apt.location.address.coordinate.lat;
         lng = apt.location.address.coordinate.lon;
       }
-
+  
       return {
         id: apt.zpid,
+        zpid: apt.zpid, // Added this line to ensure zpid is included
         latitude: lat,
         longitude: lng,
         address: apt.address,
@@ -134,7 +135,6 @@ export const HomeSearchPage = () => {
         <Row>
           <Col md={6} lg={7} className="map-column">
             <div className="map-container">
-              <div className="map-title">Find Your Nest</div>
               <div className="map-component">
                 <MapComponent
                   searchResults={mapData}

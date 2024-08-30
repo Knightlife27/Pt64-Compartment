@@ -8,7 +8,12 @@ const ApartmentList = ({ apartments }) => {
   };
 
   const handleContactAgent = (apartment) => {
-    console.log("Contacting agent for apartment:", apartment);
+    if (apartment.zpid) {
+      const zillowUrl = `https://www.zillow.com/homes/${apartment.zpid}_zpid/`;
+      window.open(zillowUrl, '_blank');
+    } else {
+      console.error("No ZPID available for this property");
+    }
   };
 
   return (
@@ -35,7 +40,7 @@ const ApartmentList = ({ apartments }) => {
               </div>
               <div className="house-address">{apartment.address}</div>
               <div className="button-wrapper">
-                <button className="contact-button" onClick={() => handleContactAgent(apartment)}>Contact Agent</button>
+                <button className="contact-button" onClick={() => handleContactAgent(apartment)}>Zillow</button>
               </div>
             </div>
           </div>
