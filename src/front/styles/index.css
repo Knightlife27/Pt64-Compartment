@@ -351,6 +351,7 @@
   justify-items: center;
   background: white;
   margin: 0 10px;
+  border-radius: var(--_br);
 }
 
 /* House info styles */
