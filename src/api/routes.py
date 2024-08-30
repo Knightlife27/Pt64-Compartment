@@ -7,7 +7,7 @@ import requests
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 from datetime import datetime, timedelta
 import hashlib
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from openai import OpenAI
 import json
 import logging
@@ -442,12 +442,27 @@ def extract_city(text):
     match = re.search(r'\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\b', text)
     return match.group(1) if match else None
 
-@api.route('/signin', methods=['POST'])
-def create_signin():
-    email = request.json.get('email', None)
-    password = request.json.get('password', None)
-    if email is not None and password is not None:
-        hashed_password = hash
+
+@api.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({"message": "Email already registered"}), 400
+
+    new_user = User(email=email, is_active=True)
+    new_user.set_password(password)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "User created successfully"}), 201
 
 @api.route('/user', methods=['GET'])
 @jwt_required()
@@ -458,20 +473,17 @@ def get_user():
         raise APIException('user not found', status_code = 404)
     return jsonify(user.serialize()), 200
 
-@api.route('/signup', methods = ['POST'])
+@api.route('/signup', methods=['POST'])
 def create_user():
-    body = request.get_json()
-    if "email" not in body:
-        return jsonify({'error': 'You need to specify the email'}), 400
-    if "password" not in body:
-        return jsonify({'error': 'You need to specify the password'}), 400
-    email = body['email']
-    password = body['password']
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    new_user = User(email = email, password = hashed_password, is_active=True)
+    email = request.json.get('email').strip()
+    password = request.json.get('password').strip()
+    
+    hashed_password = generate_password_hash(password)
+    new_user = User(email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'Signup successful'}), 200
+    
+    return jsonify({"msg": "User created successfully"}), 201
 
 
 @api.route('/chatgpt/ask', methods = ["POST"])

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "../../styles/index.css"
 
 function HomeSearch({ onSearchResults }) {
   const [loading, setLoading] = useState(false);
@@ -165,7 +166,7 @@ function HomeSearch({ onSearchResults }) {
     <div className="home-search">
       <h2 className="search-title">Find Your Dream Home</h2>
       <form onSubmit={handleSubmit} className="search-form">
-        <div className="search-input-container">
+        <div className="search-input-container" style="display: block; background-color: rgba(0, 0, 255, 0.1) padding: 16px; border: 1px solid red">
           <input
             type="text"
             className="search-input"

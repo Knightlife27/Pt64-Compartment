@@ -129,7 +129,7 @@ import { Context } from '../store/appContext';
 
 const containerStyle = {
   width: '100%',
-  height: '100vh'
+  height: '80vh'
 };
 
 const defaultCenter = {
@@ -158,7 +158,7 @@ const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
   const [error, setError] = useState(null);
-  const [animationKey, setAnimationKey] = useState(0);  // New state for forcing re-renders
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     if (searchResults && searchResults.length > 0) {
@@ -174,7 +174,7 @@ const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
   const handleMarkerClick = (apartment, index) => {
     console.log("Selected apartment data:", apartment);
     setSelectedApartmentIndex(index);
-    setAnimationKey(prevKey => prevKey + 1);  // Increment the key to force re-render
+    setAnimationKey(prevKey => prevKey + 1);  
     onMarkerClick(index);
   };
 
@@ -214,22 +214,22 @@ const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
             {
               featureType: "landscape",
               elementType: "geometry.fill",
-              stylers: [{ color: "#f1f1f1" }]
+              stylers: [{ color: "#dde3e3" }]
             },
             {
               featureType: "landscape.man_made",
               elementType: "geometry.fill",
-              stylers: [{ color: "#f1f1f1" }]
+              stylers: [{ color: "#e9ecec" }]
             },
             {
               featureType: "landscape.natural",
               elementType: "geometry.fill",
-              stylers: [{ color: "#f1f1f1" }]
+              stylers: [{ color: "#e5e8e8" }]
             },
             {
               featureType: "poi",
               elementType: "geometry.fill",
-              stylers: [{ color: "#e2e2e2" }]
+              stylers: [{ color: "#c8e0e0" }]
             },
             {
               featureType: "road",

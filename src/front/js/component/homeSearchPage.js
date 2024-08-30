@@ -3,7 +3,7 @@ import MapComponent from "./homeMap";
 import ApartmentList from "./apartmentList";
 import { Container, Row, Col } from 'react-bootstrap'
 import HomeMapSearchBar from "./homeMapSearchBar";
-import newLogo from "../../../assets/newLogo.png";
+
 
 export const HomeSearchPage = () => {
   const [mapData, setMapData] = useState([]);
@@ -41,7 +41,7 @@ export const HomeSearchPage = () => {
 
       const data = await response.json();
       console.log("Response received:", data);
-      
+
       if (data.apartments && data.apartments.length > 0) {
         const processedApartments = processApartments(data.apartments);
         handleSearchResults({ ...data, apartments: processedApartments });
@@ -97,7 +97,7 @@ export const HomeSearchPage = () => {
       console.log("Map Data:", newMapData);
       setMapData(newMapData);
     }
-  }; 
+  };
 
   const handleSearchError = (errorMessage) => {
     setError(errorMessage);
@@ -107,8 +107,8 @@ export const HomeSearchPage = () => {
   const handleMarkerClick = (index) => {
     setSelectedApartmentIndex(index);
     if (apartmentRefs.current[index]) {
-      apartmentRefs.current[index].scrollIntoView({ 
-        behavior: 'smooth', 
+      apartmentRefs.current[index].scrollIntoView({
+        behavior: 'smooth',
         block: 'nearest'
       });
     }
@@ -136,25 +136,21 @@ export const HomeSearchPage = () => {
             <div className="map-container">
               <div className="map-title">Find Your Nest</div>
               <div className="map-component">
-                <MapComponent 
-                  searchResults={mapData} 
+                <MapComponent
+                  searchResults={mapData}
                   onMarkerClick={handleMarkerClick}
                 />
               </div>
             </div>
           </Col>
-          
+
           <Col md={6} lg={5} className="search-column">
-            <Container fluid className="py-3">
-              <Row className="align-items-center mb-3">
-                <Col xs={12} md={8}>
-                  <div className="search-input">
+            <Container fluid className="">
+              <Row className="justify-content-center">
+                <Col xs={12} md={6} className="d-flex flex-column align-items-center">
+                  
+                  <div className=" mt-3">
                     <HomeMapSearchBar onSearch={handleSearch} />
-                  </div>
-                </Col>
-                <Col xs={12} md={4}>
-                  <div className="logo text-center text-md-end">
-                    <img src={newLogo} alt="Find Your Nest" className="nest-image img-fluid" style={{maxHeight: '60px'}} />
                   </div>
                 </Col>
               </Row>
@@ -164,13 +160,12 @@ export const HomeSearchPage = () => {
               {error && <p className="error-message">{error}</p>}
               {!isLoading && !error && searchResults && (
                 <>
-                  <h2 className="mb-3">Search Results</h2>
                   {searchResults.apartments && searchResults.apartments.length > 0 ? (
                     <Container fluid>
                       <Row>
                         {searchResults.apartments.map((apartment, index) => (
                           <Col key={apartment.id} xs={12} md={6} lg={4} className="mb-4">
-                            <div 
+                            <div
                               ref={el => apartmentRefs.current[index] = el}
                               className="apartment-wrapper h-100"
                             >

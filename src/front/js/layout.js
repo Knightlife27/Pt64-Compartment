@@ -7,7 +7,7 @@ import { Home } from "./pages/home";
 import { Single } from "./pages/single";
 import injectContext from "./store/appContext";
 
-// import { Navbar } from "./component/navbar";
+import { Navbar } from "./component/navbar";
 // import { Footer } from "./component/footer";
 
 
@@ -33,7 +33,7 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    {/* <Navbar /> */}
+                    <Navbar />
                     <Routes>
                         <Route element={<Category />} path="/categories" />
                         <Route element={<CategoryFavorites />} path="/categories/:category" />

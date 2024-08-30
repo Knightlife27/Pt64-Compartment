@@ -13,8 +13,8 @@ export const HomeMapSearchBar = ({ onSearch }) => {
 
   return (
     <div className="map-search-bar">
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
+      <form className="" onSubmit={handleSubmit}>
+        <div className="d-flex">
           <input
             type="text"
             placeholder="Location"
@@ -22,8 +22,6 @@ export const HomeMapSearchBar = ({ onSearch }) => {
             onChange={(e) => setLocation(e.target.value)}
             className="input-field"
           />
-        </div>
-        <div className="input-group">
           <input
             type="number"
             placeholder="Beds"
@@ -31,9 +29,7 @@ export const HomeMapSearchBar = ({ onSearch }) => {
             onChange={(e) => setBeds(e.target.value)}
             className="input-field"
             min="0"
-          />
-        </div>
-        <div className="input-group">
+          />   
           <input
             type="number"
             placeholder="Baths"
@@ -43,7 +39,7 @@ export const HomeMapSearchBar = ({ onSearch }) => {
             min="0"
           />
         </div>
-        <button type="submit" className="search-button">Search</button>
+        <button type="submit" className="search-button w-100">Search</button>
       </form>
     </div>
   );
