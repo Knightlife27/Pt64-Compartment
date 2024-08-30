@@ -156,7 +156,7 @@ export const Navbar = () => {
                                     <button
                                         className="btn"
                                         style={{
-                                            backgroundColor: "#ff4d4d",
+                                            backgroundColor: "#77d0d3",
                                             color: "#ffffff",
                                             border: "none",
                                             borderRadius: "20px",

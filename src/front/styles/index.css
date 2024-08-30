@@ -12,7 +12,7 @@
   animation: spin 1s linear infinite;
 }
 
-/* Navbar styles */
+/* Navbar styles
 .custom-navbar {
   background-color: #E6E6E6 !important;
 }
@@ -29,6 +29,30 @@
 .custom-navbar .btn:hover {
   background-color: white;
   color: #E6E6E6 !important;
+} */
+
+/* Add this to your existing CSS */
+.btn-turquoise {
+  background-color: #77d0d3;
+  border-color: #77d0d3;
+  color: white !important;
+}
+
+.btn-turquoise:hover {
+  background-color: #5fb8bb;
+  border-color: #5fb8bb;
+  color: white !important;
+}
+
+/* Update the existing navbar styles */
+.custom-navbar .btn-turquoise {
+  color: white !important;
+}
+
+.custom-navbar .btn-turquoise:hover {
+  background-color: #5fb8bb;
+  border-color: #5fb8bb;
+  color: white !important;
 }
 
 .navbar-brand-link {

@@ -464,6 +464,29 @@ def signup():
 
     return jsonify({"message": "User created successfully"}), 201
 
+
+@api.route('/signin', methods=['POST'])
+def signin():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if user is None or not check_password_hash(user.password, password):
+        return jsonify({"message": "Invalid email or password"}), 401
+
+    # Create the access token
+    access_token = create_access_token(identity=user.id)
+
+    return jsonify({
+        "message": "Logged in successfully",
+        "access_token": access_token,
+        "user_id": user.id
+    }), 200
+
 @api.route('/user', methods=['GET'])
 @jwt_required()
 def get_user():
