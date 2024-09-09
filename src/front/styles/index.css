@@ -105,9 +105,11 @@
   }
 
   .apartment-list {
-    max-width: 100%;
-    min-width: 300px;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* max-width: 100%;
+    min-width: 300px; */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
   }
 }
 
@@ -382,6 +384,7 @@
 .apartment-wrapper {
   width: 100%;
   max-width: 100%;
+  height: 100%;
   transition: all 0.3s ease;
   border-radius: 8px;
   overflow: hidden;
@@ -451,7 +454,7 @@
 }
 
 .house-meta {
-  padding: 15px;
+  /* padding: 15px; */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -460,7 +463,7 @@
   width: 100%;
   box-sizing: border-box;
   text-align: center;
-  height: 200px; /* Set a fixed height - adjust as needed */
+  height: 250px; /* Set a fixed height - adjust as needed */
 }
 
 .house-price {
