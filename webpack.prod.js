@@ -9,7 +9,9 @@ module.exports = merge(common, {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env': JSON.stringify(process.env)
+            'process.env.BASENAME': JSON.stringify(process.env.BASENAME),
+            'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
+            'process.env.REACT_APP_RAPIDAPI_KEY': JSON.stringify(process.env.REACT_APP_RAPIDAPI_KEY)
         })
     ]
 });
