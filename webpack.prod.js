@@ -9,8 +9,7 @@ module.exports = merge(common, {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env.REACT_APP_API_URL': JSON.stringify(process.env.REACT_APP_API_URL)
-            // Add other necessary frontend environment variables here
+            'process.env': JSON.stringify(process.env)
         })
     ]
 });
