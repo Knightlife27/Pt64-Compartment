@@ -13,7 +13,7 @@ export const HomeSearchPage = () => {
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);
   const apartmentRefs = useRef([]);
 
-  const backendUrl = "https://nestify-back-end.herokuapp.com";
+  const BACKEND_URL = "https://nestify-back-end.herokuapp.com";
 
   const handleSearch = async (searchCriteria) => {
     console.log('Starting handleSearch');
@@ -31,7 +31,7 @@ export const HomeSearchPage = () => {
 
       console.log("Search preferences:", preferences);
 
-      const response = await (`${backendUrl}/api/analyze_apartments`, {
+      const response = await fetch (`${BACKEND_URL}/api/analyze_apartments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ preferences })
