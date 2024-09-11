@@ -28,7 +28,7 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "change_this_in_produ
 jwt = JWTManager(app)
 
 # Enable CORS with specific origins
-CORS(app, resources={r"/api/*": {"origins": ["https://nestify-front-end-18bdf415fa8e.herokuapp.com", "http://localhost:3000"]}})
+CORS(app, resources={r"/api/*": {"origins": [os.getenv("CORS_ORIGIN", "https://frontend-nestify-5698e7840125.herokuapp.com"), "http://localhost:3000"]}})
 
 # Database configuration
 db_url = os.getenv("DATABASE_URL")
