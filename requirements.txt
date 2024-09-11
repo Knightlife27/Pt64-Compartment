@@ -22,7 +22,7 @@ pyyaml
 requests==2.26.0
 six==1.15.0
 sqlalchemy==1.4.46
-urllib3==1.26.3
+urllib3==1.26.7
 werkzeug==2.0.1
 wtforms==2.3.3
 flask-jwt-extended==4.4.4
