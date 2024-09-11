@@ -30,6 +30,7 @@ export const HomeSearchPage = () => {
       };
 
       console.log("Search preferences:", preferences);
+      console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
 
       const response = await fetch (`${BACKEND_URL}/api/analyze_apartments`, {
         method: "POST",
