@@ -13,6 +13,8 @@ export const HomeSearchPage = () => {
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);
   const apartmentRefs = useRef([]);
 
+  const backendUrl = "https://nestify-back-end.herokuapp.com";
+
   const handleSearch = async (searchCriteria) => {
     console.log('Starting handleSearch');
     setIsLoading(true);
@@ -29,7 +31,7 @@ export const HomeSearchPage = () => {
 
       console.log("Search preferences:", preferences);
 
-      const response = await fetch(process.env.BACKEND_URL + "api/analyze_apartments", {
+      const response = await (`${backendUrl}/api/analyze_apartments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ preferences })
@@ -61,12 +63,12 @@ export const HomeSearchPage = () => {
     return apartments.map(apt => {
       let lat = apt.latitude;
       let lng = apt.longitude;
-  
+
       if (!lat && !lng && apt.location && apt.location.address && apt.location.address.coordinate) {
         lat = apt.location.address.coordinate.lat;
         lng = apt.location.address.coordinate.lon;
       }
-  
+
       return {
         id: apt.zpid,
         zpid: apt.zpid, // Added this line to ensure zpid is included
@@ -148,7 +150,7 @@ export const HomeSearchPage = () => {
             <Container fluid className="">
               <Row className="justify-content-center">
                 <Col xs={12} md={6} className="d-flex flex-column align-items-center">
-                  
+
                   <div className=" mt-3">
                     <HomeMapSearchBar onSearch={handleSearch} />
                   </div>
