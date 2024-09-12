@@ -9,7 +9,7 @@
 	"scripts": {
 		"start": "node server.js",
 		"build": "webpack --config webpack.prod.js",
-		"heroku-postbuild": "npm install && npm run build",
+		"heroku-postbuild": "npm install && npm install webpack webpack-cli && npm run build",
 		"dev": "webpack-dev-server --config webpack.dev.js --port 3000"
 	},
 	"author": {
