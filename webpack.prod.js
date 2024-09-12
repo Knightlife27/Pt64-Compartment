@@ -7,13 +7,30 @@ module.exports = merge(common, {
     output: {
         publicPath: '/'
     },
+    module: {
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env', '@babel/preset-react'],
+                        plugins: [
+                            '@babel/plugin-proposal-class-properties',
+                            ['@babel/plugin-transform-runtime', { regenerator: true }]
+                        ]
+                    }
+                }
+            }
+        ]
+    },
     plugins: [
         new webpack.DefinePlugin({
             'process.env': JSON.stringify({
                 BASENAME: process.env.BASENAME,
                 BACKEND_URL: process.env.BACKEND_URL,
                 REACT_APP_RAPIDAPI_KEY: process.env.REACT_APP_RAPIDAPI_KEY,
-                // Add any other environment variables you need here
             })
         })
     ]
