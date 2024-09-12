@@ -7,9 +7,9 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "node server.js",
+		"start": "node src/front/server.js",
 		"build": "webpack --config webpack.prod.js",
-		"heroku-postbuild": "npm install && npm install webpack webpack-cli && npm run build",
+		"heroku-postbuild": "cd src/front && npm install && npx webpack --config webpack.prod.js",
 		"dev": "webpack-dev-server --config webpack.dev.js --port 3000"
 	},
 	"author": {
@@ -42,8 +42,8 @@
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
 		"react-slick": "^0.30.2",
-		"webpack": "^5.0.0",
-		"webpack-cli": "^4.0.0",
+		"webpack": "^5.94.0",
+  		"webpack-cli": "^4.10.0",
 		"slick-carousel": "^1.8.1"
 	},
 	"devDependencies": {
