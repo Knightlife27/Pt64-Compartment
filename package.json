@@ -7,7 +7,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "node src/front/server.js",
+		"start": "webpack-dev-server --config webpack.dev.js --port 3000",
 		"build": "webpack --config webpack.prod.js",
 		"heroku-postbuild": "cd src/front && npm install && npx webpack --config webpack.prod.js",
 		"dev": "webpack-dev-server --config webpack.dev.js --port 3000"

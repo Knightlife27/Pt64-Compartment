@@ -13,7 +13,7 @@ export const HomeSearchPage = () => {
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);
   const apartmentRefs = useRef([]);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://nestify-back-end.herokuapp.com";
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://backend-nestify-5c7b2f6794c9.herokuapp.com/";
 
   const handleSearch = async (searchCriteria) => {
     console.log('Starting handleSearch');
