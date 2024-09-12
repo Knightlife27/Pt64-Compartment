@@ -1,0 +1,11 @@
+{
+    "name": "react-hello-webapp-root",
+    "engines": {
+      "node": "18.x"
+    },
+    "scripts": {
+      "heroku-postbuild": "cd src/front && npm install && npm run build",
+      "start": "cd src/front && npm start"
+    }
+  }
+  
