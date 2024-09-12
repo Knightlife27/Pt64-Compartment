@@ -16,26 +16,39 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react'],
+            plugins: [
+              '@babel/plugin-proposal-class-properties',
+              ['@babel/plugin-transform-runtime', { regenerator: true }]
+            ]
+          }
+        }
       },
       {
-        test: /\.(css|scss)$/, use: [{
-            loader: "style-loader" // creates style nodes from JS strings
-        }, {
-            loader: "css-loader" // translates CSS into CommonJS
-        }]
+        test: /\.(css|scss)$/, 
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
       },
       {
-        test: /\.(png|svg|jpg|gif|jpeg|webp)$/, use: {
+        test: /\.(png|svg|jpg|gif|jpeg|webp)$/, 
+        use: {
           loader: 'file-loader',
           options: { name: '[name].[ext]' }
         }
       },
-      { test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/, use: ['file-loader'] }
+      { 
+        test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/, 
+        use: ['file-loader'] 
+      }
     ]
   },
   resolve: {
-    extensions: ['*', '.js']
+    extensions: ['*', '.js', '.jsx']
   },
   plugins: [
     new HtmlWebpackPlugin({
