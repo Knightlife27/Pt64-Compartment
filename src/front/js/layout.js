@@ -19,7 +19,7 @@ import SignUp from "./component/signUp";
 import App from "./component/openAI";
 import HomeSearch from "./component/homeSearch";
 import HomeMapComponent from "./component/homeMap";
-import HomeSearchPage from "./component/homeSearchPage"; // Import your new search page
+import { HomeSearchPage } from "./component/homeSearchPage"; // Import your new search page
 
 // ------ My imports ------------
 
