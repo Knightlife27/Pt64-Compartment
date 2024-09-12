@@ -1,11 +1,13 @@
 {
     "name": "react-hello-webapp-root",
     "engines": {
-      "node": "18.x"
+        "node": "18.x"
     },
     "scripts": {
-      "heroku-postbuild": "cd src/front && npm install && npm run build",
-      "start": "cd src/front && npm start"
+        "heroku-postbuild": "cd src/front && npm install && npm run build",
+        "start": "cd src/front && npm start"
+    },
+    "devDependencies": {
+        "webpack-cli": "^5.1.4"
     }
-  }
-  
+}
