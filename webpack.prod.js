@@ -29,9 +29,12 @@ module.exports = merge(common, {
                 }
             },
             {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            }
+                test: /\.(css|scss)$/, use: [{
+                    loader: "style-loader" // creates style nodes from JS strings
+                }, {
+                    loader: "css-loader" // translates CSS into CommonJS
+                }]
+            },
         ]
     },
     plugins: [
@@ -40,11 +43,9 @@ module.exports = merge(common, {
             filename: 'index.html'
         }),
         new webpack.DefinePlugin({
-            'process.env': JSON.stringify({
-              BASENAME: process.env.BASENAME,
-              BACKEND_URL: process.env.BACKEND_URL,
-              REACT_APP_RAPIDAPI_KEY: process.env.REACT_APP_RAPIDAPI_KEY
-            })
-          })
+            'process.env.BASENAME': JSON.stringify(process.env.BASENAME),
+            'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
+            'process.env.REACT_APP_RAPIDAPI_KEY': JSON.stringify(process.env.REACT_APP_RAPIDAPI_KEY)
+        })
     ]
 });
