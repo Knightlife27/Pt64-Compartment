@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -28,24 +29,24 @@ module.exports = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.css$/,  // Handles CSS
         use: [
-          "style-loader",
-          "css-loader"
+          "style-loader",  // Injects CSS into DOM (development only)
+          "css-loader"     // Interprets @import and url() like import/require()
         ]
       },
       {
-        test: /\.(png|svg|jpg|gif|jpeg|webp)$/,
+        test: /\.(png|svg|jpg|gif|jpeg|webp)$/,  // Handles images
         type: 'asset/resource',
         generator: {
-          filename: 'assets/[name][ext]'
+          filename: 'assets/[name][ext]'  // Puts images into the 'assets' folder
         }
       },
       {
-        test: /\.(woff2?|eot|ttf|otf|svg)$/,
+        test: /\.(woff2?|eot|ttf|otf|svg)$/,  // Handles fonts
         type: 'asset/resource',
         generator: {
-          filename: 'assets/fonts/[name][ext]'
+          filename: 'assets/fonts/[name][ext]'  // Puts fonts into the 'assets/fonts' folder
         }
       }
     ]
@@ -54,11 +55,11 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   plugins: [
+    new CleanWebpackPlugin(),  // Cleans the output directory before every build
     new HtmlWebpackPlugin({
       favicon: '4geeks.ico',
       template: './public/index.html',
       filename: 'index.html'
-
     }),
     new webpack.DefinePlugin({
       'process.env.BASENAME': JSON.stringify(process.env.BASENAME),
