@@ -31,30 +31,40 @@ module.exports = merge(common, {
                 }
             },
             {
-                test: /\.css$/,  // Handles CSS
+                test: /\.css$/,  // Handles CSS files
                 use: [
-                    MiniCssExtractPlugin.loader,  // Extracts CSS into separate files (production)
-                    'css-loader'  // Interprets @import and url() like import/require()
+                    MiniCssExtractPlugin.loader,  // Extracts CSS into separate files (for production)
+                    'css-loader',  // Interprets `@import` and `url()` in CSS
+                    {
+                        loader: 'postcss-loader',  // Apply PostCSS transformations
+                        options: {
+                            postcssOptions: {
+                                plugins: [
+                                    require('autoprefixer')()  // Automatically add vendor prefixes
+                                ]
+                            }
+                        }
+                    }
                 ]
             },
             {
-                test: /\.(png|svg|jpg|gif|jpeg|webp)$/,  // Handles images
+                test: /\.(png|svg|jpg|gif|jpeg|webp)$/,  // Handles image assets
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/[name][ext]'  // Puts images into the 'assets' folder
+                    filename: 'assets/[name][ext]'  // Output assets in 'assets' folder
                 }
             },
             {
                 test: /\.(woff2?|eot|ttf|otf|svg)$/,  // Handles fonts
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/fonts/[name][ext]'  // Puts fonts into the 'assets/fonts' folder
+                    filename: 'assets/fonts/[name][ext]'  // Output fonts in 'assets/fonts' folder
                 }
             }
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(),  // Cleans the output directory before every build
+        new CleanWebpackPlugin(),  // Cleans the output directory before each build
         new HtmlWebpackPlugin({
             favicon: '4geeks.ico',
             template: './public/index.html',
