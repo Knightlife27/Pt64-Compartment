@@ -28,22 +28,25 @@ module.exports = {
         }
       },
       {
-        test: /\.(css|scss)$/, use: [{
-          loader: "style-loader" // creates style nodes from JS strings
-        }, {
-          loader: "css-loader" // translates CSS into CommonJS
-        }]
-      }, //css only files
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
+      },
       {
         test: /\.(png|svg|jpg|gif|jpeg|webp)$/,
-        use: {
-          loader: 'file-loader',
-          options: { name: '[name].[ext]' }
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]'
         }
       },
       {
-        test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/,
-        use: ['file-loader']
+        test: /\.(woff2?|eot|ttf|otf|svg)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/fonts/[name][ext]'
+        }
       }
     ]
   },
@@ -53,10 +56,14 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       favicon: '4geeks.ico',
-      template: 'template.html'
+      template: './public/index.html',
+      filename: 'index.html'
+
     }),
     new webpack.DefinePlugin({
-      'process.env': JSON.stringify(process.env)
+      'process.env.BASENAME': JSON.stringify(process.env.BASENAME),
+      'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
+      'process.env.REACT_APP_RAPIDAPI_KEY': JSON.stringify(process.env.REACT_APP_RAPIDAPI_KEY)
     })
   ]
 };

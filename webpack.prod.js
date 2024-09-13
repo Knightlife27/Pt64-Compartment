@@ -3,6 +3,7 @@ const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = merge(common, {
     mode: 'production',
@@ -29,18 +30,36 @@ module.exports = merge(common, {
                 }
             },
             {
-                test: /\.(css|scss)$/, use: [{
-                    loader: "style-loader" // creates style nodes from JS strings
-                }, {
-                    loader: "css-loader" // translates CSS into CommonJS
-                }]
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,  // Use for production
+                    'css-loader'
+                ]
             },
+            {
+                test: /\.(png|svg|jpg|gif|jpeg|webp)$/,  // Image assets
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/[name][ext]'  // Custom path for assets
+                }
+            },
+            {
+                test: /\.(woff2?|eot|ttf|otf|svg)$/,  // Font files
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/fonts/[name][ext]'  // Custom path for fonts
+                }
+            }
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './public/index.html',
+            favicon: '4geeks.ico',  // Add your favicon here
+            template: './public/index.html',  // Adjust the template path as needed
             filename: 'index.html'
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].css'  // Output CSS file
         }),
         new webpack.DefinePlugin({
             'process.env.BASENAME': JSON.stringify(process.env.BASENAME),
