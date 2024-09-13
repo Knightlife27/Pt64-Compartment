@@ -41,10 +41,10 @@ module.exports = merge(common, {
         }),
         new webpack.DefinePlugin({
             'process.env': JSON.stringify({
-                BASENAME: process.env.BASENAME,
-                BACKEND_URL: process.env.BACKEND_URL,
-                REACT_APP_RAPIDAPI_KEY: process.env.REACT_APP_RAPIDAPI_KEY,
+              BASENAME: process.env.BASENAME,
+              BACKEND_URL: process.env.BACKEND_URL,
+              REACT_APP_RAPIDAPI_KEY: process.env.REACT_APP_RAPIDAPI_KEY
             })
-        })
+          })
     ]
 });
