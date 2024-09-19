@@ -167,7 +167,7 @@ export const MapComponent = ({ onMarkerClick }) => {
   };
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+    <LoadScript async defer googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
