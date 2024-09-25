@@ -293,9 +293,9 @@ def analyze_apartments():
         print(f"\nConstructed URL: {url}")
 
         headers = {
-            "X-RapidAPI-Key": os.getenv('REACT_APP_RAPIDAPI_KEY'),
-            "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
-        }
+    "X-RapidAPI-Key": "b795d0ddb7mshd6bc81c11ace173p1166a5jsn15beb32616c7",
+    "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
+}
         print("\nSending request to Zillow API")
         response = requests.get(url, headers=headers)
         print(f"Zillow API response status: {response.status_code}")
