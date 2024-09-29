@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import React, { useEffect, useState, useContext, useCallback, useRef } from 'react';
+import { GoogleMap, LoadScript, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { Context } from '../store/appContext';
 
 const containerStyle = {
@@ -28,12 +28,14 @@ const markerSVG = {
 };
 
 const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
+  const {isLoaded} = useJsApiLoader({id:"google-map-script", googleMapsApiKey:process.env.REACT_APP_GOOGLE_MAPS_API_KEY, libraries:["geometry", "places", "drawing"]}) 
   const { actions } = useContext(Context);
   const [apartments, setApartments] = useState([]);
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);
   const [center, setCenter] = useState(defaultCenter);
   const [error, setError] = useState(null);
   const [animationKey, setAnimationKey] = useState(0);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (searchResults && searchResults.length > 0) {
@@ -53,101 +55,70 @@ const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
     onMarkerClick(index);
   };
 
+  const onMapLoad = useCallback((map) => {
+    mapRef.current = map;
+    // You can perform any operations that require the google object here
+  }, []);
+
   console.log("Rendering HomeMapComponent with apartments:", apartments);
 
-  return (
-    <LoadScript
-      googleMapsApiKey={process.env.GOOGLE_MAPS_API_KEY}
-      libraries={['places', 'geometry', 'drawing']}
-    >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={13}
-        options={{
-          styles: [
-            {
-              featureType: "all",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#7c93a3" }, { lightness: "-10" }]
-            },
-            {
-              featureType: "administrative.country",
-              elementType: "geometry",
-              stylers: [{ visibility: "on" }]
-            },
-            {
-              featureType: "administrative.country",
-              elementType: "geometry.stroke",
-              stylers: [{ color: "#a0a4a5" }]
-            },
-            {
-              featureType: "administrative.province",
-              elementType: "geometry.stroke",
-              stylers: [{ color: "#62838e" }]
-            },
-            {
-              featureType: "landscape",
-              elementType: "geometry.fill",
-              stylers: [{ color: "#dde3e3" }]
-            },
-            {
-              featureType: "landscape.man_made",
-              elementType: "geometry.fill",
-              stylers: [{ color: "#e9ecec" }]
-            },
-            {
-              featureType: "landscape.natural",
-              elementType: "geometry.fill",
-              stylers: [{ color: "#e5e8e8" }]
-            },
-            {
-              featureType: "poi",
-              elementType: "geometry.fill",
-              stylers: [{ color: "#c8e0e0" }]
-            },
-            {
-              featureType: "road",
-              elementType: "geometry",
-              stylers: [{ lightness: "100" }]
-            },
-            {
-              featureType: "road",
-              elementType: "labels",
-              stylers: [{ visibility: "off" }, { lightness: "100" }]
-            },
-            {
-              featureType: "water",
-              elementType: "geometry.fill",
-              stylers: [{ color: "#a3c7df" }]
-            }
-          ]
-        }}
-      >
-        {apartments.map((apartment, idx) => {
-          console.log("Apartment for marker:", apartment);
-          const position = {
-            lat: Number(apartment.latitude) || defaultCenter.lat,
-            lng: Number(apartment.longitude) || defaultCenter.lng
-          };
-          console.log("Marker position:", position);
-          return (
-            <Marker
-              key={`${idx}-${selectedApartmentIndex === idx ? animationKey : ''}`}
-              position={position}
-              onClick={() => handleMarkerClick(apartment, idx)}
-              icon={{
-                url: `data:image/svg+xml;charset=UTF-8,${selectedApartmentIndex === idx ? markerSVG.selected : markerSVG.default}`,
-                scaledSize: new window.google.maps.Size(32, 48),
-                anchor: new window.google.maps.Point(16, 48),
-              }}
-              animation={selectedApartmentIndex === idx ? window.google.maps.Animation.DROP : null}
-            />
-          );
-        })}
-      </GoogleMap>
-    </LoadScript >
-  );
+  useEffect(() => {
+    if (!window.google) {
+      const script = document.createElement('script');
+      console.log(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&libraries=places,geometry,drawing&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+
+    window.initMap = () => {
+      // The map is now loaded and ready to use
+      console.log("Google Maps API loaded");
+    };
+  }, []);
+
+  return isLoaded && <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={13}
+          onLoad={onMapLoad}
+          options={{
+            styles: [
+              {
+                featureType: "all",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#7c93a3" }, { lightness: "-10" }]
+              },
+              // ... (rest of your map styles)
+            ]
+          }}
+        >
+          {apartments.map((apartment, idx) => {
+            console.log("Apartment for marker:", apartment);
+            const position = {
+              lat: Number(apartment.latitude) || defaultCenter.lat,
+              lng: Number(apartment.longitude) || defaultCenter.lng
+            };
+            console.log("Marker position:", position);
+            return (
+              <Marker
+                key={`${idx}-${selectedApartmentIndex === idx ? animationKey : ''}`}
+                position={position}
+                onClick={() => handleMarkerClick(apartment, idx)}
+                icon={{
+                  url: `data:image/svg+xml;charset=UTF-8,${selectedApartmentIndex === idx ? markerSVG.selected : markerSVG.default}`,
+                  scaledSize: new window.google.maps.Size(32, 48),
+                  anchor: new window.google.maps.Point(16, 48),
+                }}
+                animation={selectedApartmentIndex === idx ? window.google.maps.Animation.DROP : null}
+              />
+            );
+          })}
+        </GoogleMap>
+      
+    // </LoadScript>
+ 
 };
 
 export default HomeMapComponent;
