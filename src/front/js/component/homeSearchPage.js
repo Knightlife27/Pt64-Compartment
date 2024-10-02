@@ -30,9 +30,10 @@ export const HomeSearchPage = () => {
       };
 
       console.log("Search preferences:", preferences);
-      console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
+    //   console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
 
-      const response = await fetch (`https://verbose-space-acorn-7vjq4wxrxwfpv5w-3001.app.github.dev/api/analyze_apartments`, {
+    //   const response = await fetch (`https://verbose-space-acorn-7vjq4wxrxwfpv5w-3001.app.github.dev/api/analyze_apartments`, {
+      const response = await fetch (`AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ preferences })
