@@ -31,7 +31,7 @@ def handle_hello():
 @api.route('/homes', methods=['GET'])
 def get_homes():
     base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
-    
+
     # Get parameters from the request, with defaults
     location = request.args.get('location', 'San Francisco, CA')
     home_type = request.args.get('home_type', 'Apartments')
@@ -40,7 +40,7 @@ def get_homes():
     has_pool = request.args.get('hasPool')
     has_fireplace = request.args.get('hasFireplace')
     near_school = request.args.get('nearSchool')
-    
+
     url = f"{base_url}?location={location}&home_type={home_type}&sort={sort}"
     if bedrooms:
         url += f'&bedrooms={bedrooms}'
@@ -51,7 +51,7 @@ def get_homes():
     if near_school:
         url += '&nearbySchools=true'
 
-api_key= 'AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8'
+api_key= 'AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE'
 def get_coordinates(address, api_key):
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
@@ -112,7 +112,7 @@ def get_apartments():
 def parse_numeric_preference(value):
     if not value:
         return None, None
-    
+
     value = str(value).lower()
     numeric_match = re.search(r'\d+', value)
     if numeric_match:
@@ -133,7 +133,7 @@ def process_zillow_data(data):
         props = data
     else:
         props = data.get('props', [])
-    
+
     print(f"Number of properties in raw data: {len(props)}")
     for listing in props:
         processed_listing = {
@@ -172,24 +172,24 @@ def extract_location_details(location_string):
     print(f"Extracting details from: {location_string}")
     location_string = location_string.lower().strip()
     details = {}
-    
+
     # List of known cities (expand this list as needed)
     known_cities = ['palm springs', 'san diego', 'los angeles', 'new york', 'chicago', 'houston', 'phoenix', 'philadelphia', 'san antonio', 'san francisco', 'seattle']
-    
+
     # Extract city (prioritize known cities)
     for city in known_cities:
         if city in location_string:
             details['city'] = city.title()
             break
-    
+
     if 'city' not in details:
         # If no known city found, try to extract any capitalized words
         city_match = re.search(r'\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b', location_string.title())
         if city_match:
             details['city'] = city_match.group(1)
-    
+
     print(f"Extracted city: {details.get('city', 'None')}")
-    
+
     # Extract number of bedrooms
     bedroom_patterns = [
         r'(\d+)\s*(?:br\b|bed(?:room)?s?\b)',
@@ -200,7 +200,7 @@ def extract_location_details(location_string):
         if bedroom_match:
             details['bedrooms'] = int(bedroom_match.group(1))
             break
-    
+
     # Extract number of bathrooms
     bathroom_patterns = [
         r'(\d+(?:\.\d+)?)\s*(?:ba\b|bath(?:room)?s?\b)',
@@ -211,7 +211,7 @@ def extract_location_details(location_string):
         if bathroom_match:
             details['bathrooms'] = float(bathroom_match.group(1))
             break
-    
+
     # Extract price
     price_patterns = [
         r'\$?(\d+(?:\.\d+)?)\s*(?:k|thousand)',
@@ -228,7 +228,7 @@ def extract_location_details(location_string):
                 price *= 1000000
             details['price'] = price
             break
-    
+
     print(f"Extracted details: {details}")
     return details
 
@@ -243,33 +243,33 @@ def analyze_apartments():
         print("Received preferences:", json.dumps(user_preferences, indent=2))
 
         current_app.logger.info("analyze_apartments endpoint was called")
-        
+
         # Fetch apartment data
         base_url = "https://zillow-com1.p.rapidapi.com/propertyExtendedSearch"
-        
+
         # Extract location details from location string
         full_location = user_preferences.get("location", "San Francisco, CA")
         location_details = extract_location_details(full_location)
         location = location_details.get('city')
-        
+
         # If no city was extracted, use the full location string
         if not location:
             location = full_location
-        
+
         print(f"Extracted location for search: {location}")
-        
+
         sort = user_preferences.get("sort", "Newest")
-        
+
         # Parse price input
         min_price = location_details.get('price') or user_preferences.get('min_price')
         max_price = user_preferences.get('max_price')
-        
+
         # Parse square footage input
         sqft_value, sqft_comparison = parse_numeric_preference(user_preferences.get('square_footage'))
-        
+
         bedrooms = location_details.get('bedrooms') or user_preferences.get('bedrooms')
         bathrooms = location_details.get('bathrooms') or user_preferences.get('bathrooms')
-        
+
         print("\nParsed user preferences:")
         print(f"  Location: {location}")
         print(f"  Sort: {sort}")
@@ -278,7 +278,7 @@ def analyze_apartments():
         print(f"  Square footage: {sqft_value} {sqft_comparison}")
         print(f"  Bedrooms: {bedrooms}")
         print(f"  Bathrooms: {bathrooms}")
-        
+
         # Construct URL with parameters
         url = f"{base_url}?location={location}&sort={sort}"
         if min_price:
@@ -299,11 +299,11 @@ def analyze_apartments():
         print("\nSending request to Zillow API")
         response = requests.get(url, headers=headers)
         print(f"Zillow API response status: {response.status_code}")
-        
+
         if response.status_code != 200:
             print(f"Error response from Zillow API: {response.text}")
             raise Exception(f"Zillow API returned status code {response.status_code}")
-        
+
         data = response.json()
         print("Received response from Zillow API")
         if isinstance(data, list):
@@ -312,9 +312,9 @@ def analyze_apartments():
         else:
             print(f"Number of properties in response: {len(data.get('props', []))}")
             processed_data = process_zillow_data(data)
-        
+
         print(f"\nProcessed {len(processed_data)} apartments")
-        
+
         if not processed_data:
             print("No properties found after processing")
             return jsonify({
@@ -384,7 +384,7 @@ def analyze_apartments():
             }), 200
 
         print(f"\nFiltered data sample: {json.dumps(filtered_data[:2], indent=2)}")
-        
+
         # Analyze with OpenAI
         price_preference = f"Price range: {min_price if min_price else 'Not specified'} to {max_price if max_price else 'Not specified'}"
         sqft_preference = f"Square footage: {sqft_comparison} than {sqft_value}" if sqft_value else "Square footage: Not specified"
@@ -402,7 +402,7 @@ def analyze_apartments():
         Then, analyze these properties based on the extracted preferences:
         Property data: {json.dumps(filtered_data)}
 
-        Please provide a detailed analysis of the top 3-5 properties that best match the user's preferences, 
+        Please provide a detailed analysis of the top 3-5 properties that best match the user's preferences,
         including mentions of the special features listed above where applicable.
 
         Begin your response with a summary of the extracted search criteria, then proceed with the property analysis.
@@ -416,16 +416,16 @@ def analyze_apartments():
             ],
             max_tokens=1500  # Adjust as needed
         )
-        
+
         print("Received response from OpenAI")
         analysis = completion.choices[0].message.content
-        
+
         # Combine results
         result = {
             "apartments": filtered_data,
             "analysis": analysis
         }
-        
+
         print("\nSending response back to client")
         return jsonify(result), 200
     except Exception as e:
@@ -500,12 +500,12 @@ def get_user():
 def create_user():
     email = request.json.get('email').strip()
     password = request.json.get('password').strip()
-    
+
     hashed_password = generate_password_hash(password)
     new_user = User(email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    
+
     return jsonify({"msg": "User created successfully"}), 201
 
 
@@ -518,7 +518,7 @@ def generate_city_list():
     model="gpt-3.5-turbo",
     messages=[
         {"role": "system", "content": """
-        I'm going to ask you questions about different places to live. Do not use anything that is not JSON. You should return a list of 10 cities that matches the interests described for the user. The JSONs should have the following format: 
+        I'm going to ask you questions about different places to live. Do not use anything that is not JSON. You should return a list of 10 cities that matches the interests described for the user. The JSONs should have the following format:
 
         {
         weather: "[replace with climate] - [replace with average temperature]",
@@ -579,22 +579,22 @@ def create_category():
         return jsonify({'message': 'Category created successfully'}), 200
     else:
         return jsonify({'error': 'Category name is required'}), 400
-    
+
 @api.route('/delete_category', methods=['DELETE'])
 def delete_category():
     return
 
-    
+
 # creating new entry to database from chatgpt
 @api.route('/addListingToCategory', methods=['POST'])
 def add_listing():
     data = request.json  # Assuming data is sent as JSON
-    
+
     # Example of adding a listing
     new_listing = Listings(cid=data['cid'], listingName=data['listingName'])
     db.session.add(new_listing)
     db.session.commit()
-    
+
     return jsonify({'message': 'Listing added successfully'}), 201
 
 

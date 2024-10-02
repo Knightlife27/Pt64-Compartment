@@ -191,11 +191,11 @@ export const AptMapComponent = () => {
         },
         body: JSON.stringify({ name: newCategory }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to create category');
       }
-  
+
       const data = await response.json();
       console.log('Category created successfully', data);
       const newCategoryObject = {
@@ -204,7 +204,7 @@ export const AptMapComponent = () => {
       };
 
       setPropertyCategories(prevCategories => [...prevCategories, newCategoryObject]);
-  
+
       // No need to fetch categories again, as we've already updated the state
     } catch (error) {
       console.error('Error adding category:', error);
@@ -212,13 +212,13 @@ export const AptMapComponent = () => {
     }
   };
 
-  
+
   return (
     <div className="apt-map-container">
       <MapSearchBar onSearch={handleSearch} />
       <div className="apt-map-and-carousel">
         <div className="apt-map">
-          <LoadScript googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+          <LoadScript googleMapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
             <GoogleMap
               mapContainerStyle={containerStyle}
               center={center}

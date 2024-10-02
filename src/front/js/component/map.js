@@ -14,10 +14,10 @@
 // };
 
 // export const MapComponent = () => {
-//   const { actions } = useContext(Context); 
+//   const { actions } = useContext(Context);
 //   const [apartments, setApartments] = useState([]);
 //   const [selectedApartment, setSelectedApartment] = useState(null);
-//   const [location, setLocation] = useState('San Francisco, CA'); 
+//   const [location, setLocation] = useState('San Francisco, CA');
 //   const [beds, setBeds] = useState(null);
 //   const [baths, setBaths] = useState(null);
 //   const [error, setError] = useState(null);
@@ -66,7 +66,7 @@
 
 
 //   return (
-//     <LoadScript googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+//     <LoadScript googleMapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
 //       <GoogleMap
 //         mapContainerStyle={containerStyle}
 //         center={center}
@@ -167,7 +167,7 @@ export const MapComponent = ({ onMarkerClick }) => {
   };
 
   return (
-    <LoadScript async defer MapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+    <LoadScript async defer MapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
