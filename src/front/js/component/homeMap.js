@@ -28,7 +28,7 @@ const markerSVG = {
 };
 
 const HomeMapComponent = ({ searchResults, onMarkerClick }) => {
-  const {isLoaded} = useJsApiLoader({id:"google-map-script", googleMapsApiKey:"AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE", libraries:["geometry", "places", "drawing"]})
+  const {isLoaded} = useJsApiLoader({id:"google-map-script", googleMapsApiKey:"AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8", libraries:["geometry", "places", "drawing"]})
   const { actions } = useContext(Context);
   const [apartments, setApartments] = useState([]);
   const [selectedApartmentIndex, setSelectedApartmentIndex] = useState(null);

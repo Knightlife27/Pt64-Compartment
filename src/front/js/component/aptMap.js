@@ -218,7 +218,7 @@ export const AptMapComponent = () => {
       <MapSearchBar onSearch={handleSearch} />
       <div className="apt-map-and-carousel">
         <div className="apt-map">
-          <LoadScript googleMapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
+          <LoadScript googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
             <GoogleMap
               mapContainerStyle={containerStyle}
               center={center}
