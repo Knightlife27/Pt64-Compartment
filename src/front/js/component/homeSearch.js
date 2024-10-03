@@ -6,7 +6,8 @@ function HomeSearch({ onSearchResults }) {
   const [error, setError] = useState(null);
   const [userPrompt, setUserPrompt] = useState('');
 
-  const BACKEND_URL = "https://nestify-back-end.herokuapp.com";
+//   const BACKEND_URL = "https://nestify-back-end.herokuapp.com";
+  const BACKEND_URL = "https://backend-nestify-5c7b2f6794c9.herokuapp.com";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -78,7 +79,7 @@ function HomeSearch({ onSearchResults }) {
 
   const parsePreferences = (input) => {
     const preferences = {};
-    
+
     // More flexible location matching
     const locationPatterns = [
       /(?:in|at|near|around)\s+(\w+(?:,?\s*\w+)*)/i,
@@ -101,14 +102,14 @@ function HomeSearch({ onSearchResults }) {
       const words = input.split(/\s+/);
       for (let i = 0; i < words.length; i++) {
         const possibleLocation = words.slice(i, i + 3).join(' ');
-        if (!/\d/.test(possibleLocation) && 
+        if (!/\d/.test(possibleLocation) &&
             !/bed|bath|sq|square|ft|feet|bedroom|bathroom|house|apartment|condo|townhouse/i.test(possibleLocation)) {
           preferences.location = possibleLocation;
           break;
         }
       }
     }
-    
+
     const homeTypeMatch = input.match(/(apartment|house|condo|townhouse)/i);
     const bedroomsMatch = input.match(/(\d+)\s*bedrooms?/i);
     const bathroomsMatch = input.match(/(\d+)\s*bathrooms?/i);
