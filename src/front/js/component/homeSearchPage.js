@@ -33,7 +33,7 @@ export const HomeSearchPage = () => {
     //   console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
 
     //   const response = await fetch (`https://verbose-space-acorn-7vjq4wxrxwfpv5w-3001.app.github.dev/api/analyze_apartments`, {
-      const response = await fetch (`https://backend-nestify-5c7b2f6794c9.herokuapp.com/`, {
+      const response = await fetch (`https://backend-nestify-5c7b2f6794c9.herokuapp.com/api/analyze_apartments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ preferences })
