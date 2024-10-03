@@ -16,11 +16,12 @@ import re
 
 client = OpenAI()
 
-app = Flask(__name__)
-CORS(app)
-
 api = Blueprint('api', __name__)
 CORS(api)
+
+@blueprint.route('/cors_test_route')
+def some_route():
+    return "cors_test_route now supports CORS"
 
 # Allow CORS requests to this API
 # CORS(api, resources={r"/*": {"origins": "*"}})
