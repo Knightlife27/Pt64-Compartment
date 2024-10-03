@@ -1,4 +1,4 @@
-from flask import Flask, logging, request, current_app, jsonify, url_for, Blueprint
+from flask import Flask, logging, request, current_app, jsonify, url_for, Blueprint, CORS
 from api.models import db, User, Categories, Listings
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -19,7 +19,9 @@ client = OpenAI()
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api, resources={r"/*": {"origins": "*"}})
+# CORS(api, resources={r"/*": {"origins": "*"}})
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
