@@ -51,7 +51,7 @@ def get_homes():
     if near_school:
         url += '&nearbySchools=true'
 
-api_key= 'AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8'
+api_key= 'AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE'
 def get_coordinates(address, api_key):
     base_url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {

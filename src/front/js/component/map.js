@@ -66,7 +66,7 @@
 
 
 //   return (
-//     <LoadScript googleMapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+//     <LoadScript googleMapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
 //       <GoogleMap
 //         mapContainerStyle={containerStyle}
 //         center={center}
@@ -167,7 +167,7 @@ export const MapComponent = ({ onMarkerClick }) => {
   };
 
   return (
-    <LoadScript async defer MapsApiKey="AIzaSyA78pBoItwl17q9g5pZPNUYmLuOnTDPVo8">
+    <LoadScript async defer MapsApiKey="AIzaSyBnfyPlPR8dahULrOxvBT7UDjKlAGOkqNE">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
