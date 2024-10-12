@@ -17,11 +17,10 @@ import re
 client = OpenAI()
 
 api = Blueprint('api', __name__)
-# CORS(api)
 
 # Allow CORS requests to this API
+# CORS(api)
 CORS(api, resources={r"/*": {"origins": "*"}})
-# CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}}, supports_credentials=True)
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -295,9 +294,9 @@ def analyze_apartments():
         print(f"\nConstructed URL: {url}")
 
         headers = {
-    "X-RapidAPI-Key": "b795d0ddb7mshd6bc81c11ace173p1166a5jsn15beb32616c7",
-    "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
-}
+            "X-RapidAPI-Key": "b795d0ddb7mshd6bc81c11ace173p1166a5jsn15beb32616c7",
+            "X-RapidAPI-Host": "zillow-com1.p.rapidapi.com"
+        }
         print("\nSending request to Zillow API")
         response = requests.get(url, headers=headers)
         print(f"Zillow API response status: {response.status_code}")
@@ -450,6 +449,7 @@ def signup():
     data = request.json
     email = data.get('email')
     password = data.get('password')
+    return;
 
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
