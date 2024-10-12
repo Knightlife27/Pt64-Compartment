@@ -449,7 +449,7 @@ def signup():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    return;
+    return jsonify({"message": "Step 1"}), 200
 
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
