@@ -17,10 +17,10 @@ import re
 client = OpenAI()
 
 api = Blueprint('api', __name__)
-CORS(api)
+# CORS(api)
 
 # Allow CORS requests to this API
-# CORS(api, resources={r"/*": {"origins": "*"}})
+CORS(api, resources={r"/*": {"origins": "*"}})
 # CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*"}}, supports_credentials=True)
 
 @api.route('/hello', methods=['POST', 'GET'])
