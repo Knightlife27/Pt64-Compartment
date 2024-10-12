@@ -35,11 +35,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			fetchApartments: async (location) => {
-				const response = await fetch(process.env.BACKEND_URL +`/api/apartments?location=${location}`);
+				const response = await fetch(process.env.BACKEND_URL +`api/apartments?location=${location}`);
 				const data = await response.json();
 				return data;
 			},
-			
+
 			logOut: () => {
 				sessionStorage.removeItem('token');
 				setStore({ token: null });
@@ -47,7 +47,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			getMessage: async () => {
 				try {
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello");
+					const resp = await fetch(process.env.BACKEND_URL + "api/hello");
 					const data = await resp.json();
 					setStore({ message: data.message });
 					return data;
@@ -55,10 +55,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log("Error loading message from backend", error);
 				}
 			},
-			
+
 			signUp: async (email, password) => {
 				try {
-					const req = await fetch(process.env.BACKEND_URL + '/api/signup', {
+					const req = await fetch(process.env.BACKEND_URL + 'api/signup', {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json'
@@ -79,7 +79,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			logIn: async (email, password) => {
 				try {
-					const req = await fetch(process.env.BACKEND_URL + "/api/signin", {
+					const req = await fetch(process.env.BACKEND_URL + "api/signin", {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							'Authorization': 'Bearer' + sessionStorage.getItem('token')
 						}
 					}
-					let response = await fetch(process.env.BACKEND_URL + "/api/private", options)
+					let response = await fetch(process.env.BACKEND_URL + "api/private", options)
 					let data = await response.json()
 				}
 				catch (error) {
