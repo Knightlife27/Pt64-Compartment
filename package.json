@@ -1,7 +1,8 @@
 {
 	"name": "react-hello-webapp",
 	"engines": {
-		"node": "18.x"
+		"node": "18.x",
+		"npm": "10.x"
 	},
 	"version": "1.0.1",
 	"description": "",
@@ -9,7 +10,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --config webpack.dev.js --port 3000",
 		"build": "webpack --config webpack.prod.js",
-		"heroku-postbuild": "cd src/front && npm install && npx webpack --config webpack.prod.js",
+		"heroku-postbuild": "cd src/front && npm install && npm install webpack-cli && npx webpack --config webpack.prod.js",
 		"dev": "webpack-dev-server --config webpack.dev.js --port 3000"
 	},
 	"author": {
@@ -43,8 +44,7 @@
 		"react-router-dom": "^6.3.0",
 		"react-slick": "^0.30.2",
 		"slick-carousel": "^1.8.1",
-		"webpack": "^5.94.0",
-		"webpack-cli": "^4.10.0"
+		"webpack": "^5.94.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.16.0",
