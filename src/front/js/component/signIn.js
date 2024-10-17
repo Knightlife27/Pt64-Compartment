@@ -18,7 +18,7 @@ function SignIn() {
     const success = await actions.logIn(email, password);
     if (success) {
       console.log('User signed in successfully');
-      navigate('/searchPage');
+      navigate('/homeSearchpage');
     } else {
       console.log('Signin failed');
     }
