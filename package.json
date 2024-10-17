@@ -10,7 +10,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --config webpack.dev.js --port 3000",
 		"build": "webpack --config webpack.prod.js",
-		"heroku-postbuild": "cd src/front && npm install --only=dev && npm install && npx webpack --config webpack.prod.js",
+		"heroku-postbuild": "cd src/front && npm install --only=dev && npm install && npm install webpack-cli --no-prompt && npx webpack --config webpack.prod.js",
 		"dev": "webpack-dev-server --config webpack.dev.js --port 3000"
 	},
 	"author": {
